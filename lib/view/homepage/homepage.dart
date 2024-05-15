@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:notification_app_woocommerce/view/footer.dart';
 import 'package:notification_app_woocommerce/view/header.dart';
 // 'package:notification_app_woocommerce/view/log/login_page.dart';
@@ -65,7 +64,7 @@ class HomePage extends StatelessWidget {
           ),
 
           // footer
-          const Footer(),
+          Footer(),
         ],
       ),
     );

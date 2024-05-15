@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class Footer extends StatelessWidget {
-  const Footer({super.key});
+  Footer({super.key});
+
+  // on recupere la date pour le copyright
+  final date = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 20,
       color: HexColor("#2B353E"),
-      child: const Row(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
+          const Expanded(
             child: Row(
               children: [
                 SizedBox(
@@ -34,13 +37,13 @@ class Footer extends StatelessWidget {
           Row(
             children: [
               Text(
-                '© COPYRIGHT SDPMA',
-                style: TextStyle(
+                '© COPYRIGHT SDPMA - ${date.year}',
+                style: const TextStyle(
                     color: Colors.white30,
                     fontSize: 10,
                     fontWeight: FontWeight.bold),
               ),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
             ],
           )
         ],

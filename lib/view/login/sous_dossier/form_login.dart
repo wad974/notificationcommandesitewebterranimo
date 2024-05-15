@@ -1,7 +1,9 @@
 //import 'dart:html';
 
 // ignore_for_file: must_be_immutable, unused_field
+import 'dart:io';
 
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hive/hive.dart';
@@ -27,12 +29,14 @@ class _FormLoginState extends State<FormLogin> {
   //on recupere database pour stocker les logins de connexion
   LoginDataBase db = LoginDataBase();
 
-  //creation login pour stocker dans la noSQL
-  void validationFormulaire() {
+  //creation login pour stocker dans la dans un fichier TXT et recup args
+  Future validationFormulaire() async {
     if (cleFormulaire.currentState!.validate()) {
       cleFormulaire.currentState!.save();
 
-      db.userLogin.add([controllerLogin.text]);
+      // db.userLogin.add([controllerLogin.text]);
+      // on appel la function pour stocker les nom utilisateur + date
+      await ecrireDonneesSiNecessaire(controllerLogin.text);
 
       //on utilise navigator pushNamed
       Navigator.push(
@@ -51,6 +55,35 @@ class _FormLoginState extends State<FormLogin> {
   Future<void> quitterApplication() async {
     await windowManager.close();
   }
+
+  // direction path pour enregistrer fichier.txt
+  // DEBUT ENREGISTRERMENT FICHIER
+  Future<bool> siRepertoireExists(String path) async {
+    Directory directory = Directory(path);
+    return await directory.exists();
+  }
+
+  Future ecrireDonneesSiNecessaire(String nameLogin) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final enregistrementDossierLogin = '${directory.path}/login';
+    //on verifie dossier login exist
+    bool repertoireExist = await siRepertoireExists(enregistrementDossierLogin);
+
+    if (!repertoireExist) {
+      Directory(enregistrementDossierLogin).createSync(recursive: true);
+    }
+
+    final file = File('$enregistrementDossierLogin/fichier.txt');
+
+    final String date = DateTime.now().toString();
+
+    if (!repertoireExist) {
+      await file.writeAsString('${nameLogin} - ${date}');
+    }
+
+    print('Dossier creer');
+  }
+  //FIN DIRECTION PATH
 
   @override
   Widget build(BuildContext context) {
