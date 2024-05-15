@@ -1,7 +1,7 @@
 // ignore_for_file: must_be_immutable, sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
-import 'package:notification_app_woocommerce/view/log/login_page.dart';
+import 'package:notification_app_woocommerce/view/login/login_page.dart';
 
 class DrawerPage extends StatelessWidget {
   //final Function()? refresh;

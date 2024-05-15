@@ -4,12 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:notification_app_woocommerce/view/homepage/homepage.dart';
-import 'package:notification_app_woocommerce/view/orders/orderspage.dart';
+import 'package:notification_app_woocommerce/view/homepage/orders/orderspage.dart';
 //import 'view/homepage/homepage.dart';
 //window
 import 'package:window_manager/window_manager.dart';
 
-import 'view/log/login_page.dart';
+import 'view/login/login_page.dart';
 
 //void main
 void main() async {
