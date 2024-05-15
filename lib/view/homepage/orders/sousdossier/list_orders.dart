@@ -43,13 +43,7 @@ class _listOrdersState extends State<listOrders> {
             builder: (context, index) {
               if (index.connectionState == ConnectionState.waiting) {
                 // si l'état de la connexion est wait alors on affiche
-                return SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Container(
-                        width: 1000,
-                        height: 500,
-                        alignment: Alignment.center,
-                        child: const CircularProgressIndicator()));
+                return const Center(child: CircularProgressIndicator());
               } else {
                 return DataTable(
                   columns: const <DataColumn>[

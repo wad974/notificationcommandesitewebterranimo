@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:notification_app_woocommerce/view/footer.dart';
 import 'package:notification_app_woocommerce/view/header.dart';
+import 'package:notification_app_woocommerce/view/homepage/orders/orderspage.dart';
+import 'package:notification_app_woocommerce/view/homepage/orders/sousdossier/list_orders.dart';
 // 'package:notification_app_woocommerce/view/log/login_page.dart';
 import 'package:notification_app_woocommerce/widget/drawer/drawerpage.dart';
 import 'package:window_manager/window_manager.dart';
@@ -43,17 +45,62 @@ class HomePage extends StatelessWidget {
                     scrollDirection: Axis.vertical,
                     child: Column(
                       children: [
-                        Container(
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.all(10),
-                          child: IconButton(
-                            onPressed: reduireFenetre,
-                            icon: const Icon(Icons.arrow_drop_down),
-                          ),
-                        ),
+                        // Container(
+                        //   alignment: Alignment.centerRight,
+                        //   padding: const EdgeInsets.all(10),
+                        //   child: IconButton(
+                        //     onPressed: reduireFenetre,
+                        //     icon: const Icon(Icons.arrow_drop_down),
+                        //   ),
+                        // ),
+                        // contenu orders
                         Container(
                           // color: Colors.red,
-                          height: 1300,
+                          padding: const EdgeInsets.all(40),
+                          child: Column(
+                            children: [
+                              // TTITRE ORDERS
+                              Container(
+                                alignment: Alignment.topLeft,
+                                child: const Text(
+                                  'Commandes',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              const SizedBox(height: 40),
+
+                              // LISTE ORDERS CONTAINER
+                              Container(
+                                height: 800,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      width: 1, color: Colors.grey.shade300),
+                                ),
+                                child: Column(
+                                  children: [
+                                    // champ input recherche
+                                    Container(
+                                      alignment: Alignment.topLeft,
+                                      width: 800,
+                                      child: const TextField(
+                                        decoration: InputDecoration(
+                                            icon: Icon(Icons.search),
+                                            labelText:
+                                                'Search for Order ID, Customer , order Status',
+                                            border: OutlineInputBorder()),
+                                      ),
+                                    ),
+
+                                    // list commandes
+                                    const listOrders(),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ],
                     ),
