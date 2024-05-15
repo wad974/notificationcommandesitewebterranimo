@@ -51,7 +51,8 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          //contenu body
+
+          //contenu body 
           Expanded(
             child: Row(
               children: [
@@ -83,9 +84,15 @@ class HomePage extends StatelessWidget {
             ),
           ),
 
+          // footer
           Container(
             height: 20,
             color: HexColor("#2B353E"),
+            child: const Row(
+              children: [
+
+              ],
+            ),
           )
         ],
       ),
