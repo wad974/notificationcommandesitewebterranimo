@@ -1,6 +1,6 @@
 //import 'dart:html';
 
-// ignore_for_file: must_be_immutable, unused_field
+// ignore_for_file: must_be_immutable, unused_field, unnecessary_brace_in_string_interps, use_build_context_synchronously, avoid_print
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
@@ -36,7 +36,7 @@ class _FormLoginState extends State<FormLogin> {
 
       // db.userLogin.add([controllerLogin.text]);
       // on appel la function pour stocker les nom utilisateur + date
-      await ecrireDonneesSiNecessaire(controllerLogin.text);
+      ecrireDonneesSiNecessaire(controllerLogin.text);
 
       //on utilise navigator pushNamed
       Navigator.push(
@@ -64,21 +64,32 @@ class _FormLoginState extends State<FormLogin> {
   }
 
   Future ecrireDonneesSiNecessaire(String nameLogin) async {
+    // on appel le repertoire documents
     final directory = await getApplicationDocumentsDirectory();
     final enregistrementDossierLogin = '${directory.path}/login';
     //on verifie dossier login exist
     bool repertoireExist = await siRepertoireExists(enregistrementDossierLogin);
 
-    if (!repertoireExist) {
+    if (repertoireExist == false) {
       Directory(enregistrementDossierLogin).createSync(recursive: true);
     }
 
     final file = File('$enregistrementDossierLogin/fichier.txt');
+    bool fichierEstVrai = await file.exists();
 
     final String date = DateTime.now().toString();
 
-    if (!repertoireExist) {
-      await file.writeAsString('${nameLogin} - ${date}');
+    if (fichierEstVrai) {
+      //on ajoute le nom et date dans le fichier existant
+      IOSink data = file.openWrite(mode: FileMode.append);
+      data.write('$nameLogin $date\n');
+      await data.flush();
+      await data.close();
+
+      // sinon
+    } else {
+      // on creer un fichier
+      await file.writeAsString('$nameLogin $date\n');
     }
 
     print('Dossier creer');
