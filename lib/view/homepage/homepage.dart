@@ -1,30 +1,72 @@
+import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:notification_app_woocommerce/view/footer.dart';
 import 'package:notification_app_woocommerce/view/header.dart';
-import 'package:notification_app_woocommerce/view/homepage/orders/orderspage.dart';
-import 'package:notification_app_woocommerce/view/homepage/orders/sousdossier/list_orders.dart';
-// 'package:notification_app_woocommerce/view/log/login_page.dart';
+
+import 'package:notification_app_woocommerce/view/homepage/orders/liste_de_tout_commande.dart';
+
 import 'package:notification_app_woocommerce/widget/drawer/drawerpage.dart';
-import 'package:window_manager/window_manager.dart';
 
-//import '../../Controller/http.dart'
-//import 'package:notification_app_woocommerce/widget/drawer/drawerpage.dart';
-
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   static String routeName = '/';
 
   const HomePage({super.key});
 
-  // reduire la fenêtre
-  Future<void> reduireFenetre() async {
-    //print('minimmize');
-    await windowManager.minimize();
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  //init http
+  List dataList = [];
+  late List<bool> selected;
+  late List<bool> btnTransmission;
+  late List<bool> btnSaisiCaisse;
+  late List<bool> btnCommandePret;
+  late List<bool> btnCommandeEnvoyer;
+
+  Future fetchDataOrders() async {
+    try {
+      http.Response response =
+          await http.get(Uri.parse('http://192.168.1.22:1111/commandes/'));
+
+      if (response.statusCode == 200) {
+        // print(json.decode(response.body));
+        setState(() {
+          dataList = json.decode(response.body);
+          selected = List<bool>.generate(dataList.length, (index) => false);
+          btnSaisiCaisse =
+              List<bool>.generate(dataList.length, (index) => false);
+          btnCommandePret =
+              List<bool>.generate(dataList.length, (index) => false);
+          btnCommandeEnvoyer =
+              List<bool>.generate(dataList.length, (index) => false);
+          btnTransmission =
+              List<bool>.generate(dataList.length, (index) => false);
+        });
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDataOrders();
   }
 
   @override
   Widget build(BuildContext context) {
     //on recuperer les données de navigator.pushNamed
-    final loginName = ModalRoute.of(context)!.settings.arguments as String;
+    final String loginName =
+        ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
       // on prend toute la page avec 2 row
@@ -41,69 +83,67 @@ class HomePage extends StatelessWidget {
                 const DrawerPage(),
                 // un expanded
                 Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      children: [
-                        // Container(
-                        //   alignment: Alignment.centerRight,
-                        //   padding: const EdgeInsets.all(10),
-                        //   child: IconButton(
-                        //     onPressed: reduireFenetre,
-                        //     icon: const Icon(Icons.arrow_drop_down),
-                        //   ),
-                        // ),
-                        // contenu orders
-                        Container(
-                          // color: Colors.red,
-                          padding: const EdgeInsets.all(40),
-                          child: Column(
-                            children: [
-                              // TTITRE ORDERS
-                              Container(
-                                alignment: Alignment.topLeft,
-                                child: const Text(
-                                  'Commandes',
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              const SizedBox(height: 40),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      //TITRE COMMANDES
+                      Container(
+                        alignment: Alignment.bottomLeft,
+                        padding: const EdgeInsets.only(left: 50.0),
+                        height: 100,
+                        child: const Text(
+                          'Commandes',
+                          style: TextStyle(
+                              fontSize: 40, fontWeight: FontWeight.bold),
+                        ),
+                      ),
 
-                              // LISTE ORDERS CONTAINER
-                              Container(
-                                height: 800,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      width: 1, color: Colors.grey.shade300),
+                      // DIV recherche champ input +  body list  de tous les commandes
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(50),
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                border: const Border(
+                                    right: BorderSide(width: 1),
+                                    top: BorderSide(width: 1),
+                                    bottom: BorderSide(width: 1),
+                                    left: BorderSide(width: 1)),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //champ input rechercher
+                                Container(
+                                  padding: EdgeInsets.only(left: 40, top: 10),
+                                  height: 100,
+                                  width: 500,
+                                  child: TextFormField(
+                                    decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        icon: Icon(Icons.search),
+                                        labelText: 'Recherche'),
+                                  ),
                                 ),
-                                child: Column(
-                                  children: [
-                                    // champ input recherche
-                                    Container(
-                                      alignment: Alignment.topLeft,
-                                      width: 800,
-                                      child: const TextField(
-                                        decoration: InputDecoration(
-                                            icon: Icon(Icons.search),
-                                            labelText:
-                                                'Search for Order ID, Customer , order Status',
-                                            border: OutlineInputBorder()),
-                                      ),
-                                    ),
 
-                                    // list commandes
-                                    const listOrders(),
-                                  ],
+                                // liste de tous les commandes
+                                ListAllOrders(
+                                  dataList: dataList,
+                                  btnCommandeEnvoyer: btnCommandeEnvoyer,
+                                  btnCommandePret: btnCommandePret,
+                                  btnSaisiCaisse: btnSaisiCaisse,
+                                  btnTransmission: btnTransmission,
                                 ),
-                              )
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],

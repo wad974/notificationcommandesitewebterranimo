@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:notification_app_woocommerce/view/homepage/homepage.dart';
-import 'package:notification_app_woocommerce/view/homepage/orders/orderspage.dart';
 //import 'view/homepage/homepage.dart';
 //window
 import 'package:window_manager/window_manager.dart';
@@ -23,7 +22,7 @@ void main() async {
 
   WindowOptions windowOptions = const WindowOptions(
       // size: Size(1600, 1000),
-      minimumSize: Size(1200, 800),
+      minimumSize: Size(1366 , 768),
       fullScreen: false,
       center: true,
       backgroundColor: Colors.transparent,
@@ -55,7 +54,6 @@ class NotificationWooCommerce extends StatelessWidget {
       routes: {
         LoginPage.routeName: (context) => const LoginPage(),
         HomePage.routeName: (context) => const HomePage(),
-        OrdersPage.routeName: (context) => const OrdersPage(),
       },
     );
   }
