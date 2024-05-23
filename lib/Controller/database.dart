@@ -24,11 +24,9 @@ class DataBase {
     // Import package widget.dart
     WidgetsFlutterBinding.ensureInitialized();
 
-    // Path dababase
-    String path = join(await getDatabasesPath(), 'orders_database.db');
     // Ouvrir la base de données
     _database = await openDatabase(
-      path,
+      join(await getDatabasesPath(), 'orders_database.db'),
       onCreate: (db, version) {
         return db.execute(
           'CREATE TABLE orders(id INTEGER PRIMARY KEY, nom TEXT, prenom TEXT, date TEXT, methodeDeLivraison TEXT, transmissionResponsable INTEGER, saisieEnCaisse INTEGER, commandePrete INTEGER, commandeEnvoyerRetirer INTEGER, nomDuResponsableEnCharge TEXT)',
@@ -45,13 +43,14 @@ class DataBase {
       orders.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    print("Commande inserer: ${orders.toMap()}");
   }
 
   // Fonction pour récupérer les commandes archivées
   Future<List<Orders>> listesCommandesArchivers() async {
     final List<Map<String, Object?>> ordersMaps =
         await _database.query('orders');
-
+    // print("Recupere tous les commandes: $ordersMaps");
     // Convertir la liste en object
     return [
       for (final {
@@ -60,10 +59,10 @@ class DataBase {
             'prenom': prenom as String,
             'date': date as String,
             'methodeDeLivraison': methodeDeLivraison as String,
-            'transmissionResponsable': transmissionResponsable as bool,
-            'saisieEnCaisse': saisieEnCaisse as bool,
-            'commandePrete': commandePrete as bool,
-            'commandeEnvoyerRetirer': commandeEnvoyerRetirer as bool,
+            'transmissionResponsable': transmissionResponsable as int,
+            'saisieEnCaisse': saisieEnCaisse as int,
+            'commandePrete': commandePrete as int,
+            'commandeEnvoyerRetirer': commandeEnvoyerRetirer as int,
             'nomDuResponsableEnCharge': nomDuResponsableEnCharge as String,
           } in ordersMaps)
         Orders(

@@ -6,10 +6,10 @@ class Orders {
   final String prenom;
   final String date;
   final String methodeDeLivraison;
-  final bool transmissionResponsable;
-  final bool saisieEnCaisse;
-  final bool commandePrete;
-  final bool commandeEnvoyerRetirer;
+  final int transmissionResponsable;
+  final int saisieEnCaisse;
+  final int commandePrete;
+  final int commandeEnvoyerRetirer;
   final String nomDuResponsableEnCharge;
 
   const Orders({
@@ -32,10 +32,10 @@ class Orders {
       'prenom': prenom,
       'date': date,
       'methodeDeLivraison': methodeDeLivraison,
-      'transmissionResponsable': transmissionResponsable ? 1 : 0,
-      'saisieEnCaisse': saisieEnCaisse ? 1 : 0,
-      'commandePrete': commandePrete ? 1 : 0,
-      'commandeEnvoyerRetirer': commandeEnvoyerRetirer ? 1 : 0,
+      'transmissionResponsable': transmissionResponsable,
+      'saisieEnCaisse': saisieEnCaisse,
+      'commandePrete': commandePrete,
+      'commandeEnvoyerRetirer': commandeEnvoyerRetirer,
       'nomDuResponsableEnCharge': nomDuResponsableEnCharge,
     };
   }
