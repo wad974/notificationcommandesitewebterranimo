@@ -22,7 +22,7 @@ void main() async {
 
   WindowOptions windowOptions = const WindowOptions(
       // size: Size(1600, 1000),
-      minimumSize: Size(1366 , 768),
+      minimumSize: Size(1600, 768),
       fullScreen: false,
       center: true,
       backgroundColor: Colors.transparent,

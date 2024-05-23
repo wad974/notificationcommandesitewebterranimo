@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
 import 'package:notification_app_woocommerce/view/homepage/orders/sousdossier/dialog_bouton.dart';
@@ -9,6 +9,7 @@ class ListAllOrders extends StatefulWidget {
   late List<bool> btnSaisiCaisse;
   late List<bool> btnCommandePret;
   late List<bool> btnCommandeEnvoyer;
+  String loginName;
 
   ListAllOrders({
     super.key,
@@ -17,6 +18,7 @@ class ListAllOrders extends StatefulWidget {
     required this.btnCommandePret,
     required this.btnSaisiCaisse,
     required this.btnTransmission,
+    required this.loginName,
   });
 
   @override
@@ -58,6 +60,25 @@ class _ListAllOrdersState extends State<ListAllOrders> {
     }
   }
 
+  void showCommandeEnvoyerRetirer(index) async {
+    final resultat = await showDialog(
+        context: context,
+        builder: (context) {
+          return DialogBoutonFinal(
+            index: index,
+            btn: widget.btnCommandeEnvoyer,
+          );
+        });
+    if (resultat == 'sauvegarder') {
+      // partie a faire pour stocker dans la basse Sqlite
+
+      //fin partie
+      setState(() {
+        widget.btnCommandeEnvoyer[index] = !widget.btnCommandeEnvoyer[index];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -72,15 +93,40 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                 children: [
                   Expanded(
                     child: DataTable(
+                      showBottomBorder: true,
                       headingRowColor: MaterialStateProperty.all(
                           const Color.fromRGBO(192, 69, 61, 1)),
                       columns: const [
                         //id
-                        DataColumn(label: Text('ID')),
+                        DataColumn(
+                            label: Expanded(
+                          child: Center(
+                            child: Text(
+                              'ID',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )),
                         //nom
-                        DataColumn(label: Text('Nom')),
+                        DataColumn(
+                            label: Expanded(
+                          child: Center(
+                            child: Text(
+                              'Nom',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )),
                         //prenom
-                        DataColumn(label: Text('Prenom')),
+                        DataColumn(
+                            label: Expanded(
+                          child: Center(
+                            child: Text(
+                              'Prenom',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )),
                         //date
                         DataColumn(
                           label: Expanded(
@@ -94,26 +140,58 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                         ),
                         //livraison
                         DataColumn(
-                            label: Center(
-                          child: Text(
-                            'Methode\n de Livraison',
-                            textAlign: TextAlign.center,
+                            label: Expanded(
+                          child: Center(
+                            child: Text(
+                              'Methode\n de Livraison',
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         )),
                         //Transmission
-                        DataColumn(label: Text('Transmission Responsable')),
+                        DataColumn(
+                            label: Expanded(
+                          child: Center(
+                            child: Text(
+                              'Transmission\n Responsable',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )),
                         //saisi
-                        DataColumn(label: Text('Saisie en caisse')),
+                        DataColumn(
+                            label: Expanded(
+                          child: Center(
+                            child: Text(
+                              'Saisie en\n caisse',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )),
                         //commande
-                        DataColumn(label: Text('Commande Prete')),
+                        DataColumn(
+                            label: Expanded(
+                          child: Center(
+                            child: Text(
+                              'Commande\n Prete',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )),
                         //envoyer
-                        DataColumn(label: Text('Commande\n Envoyer / Retirer')),
+                        DataColumn(
+                            label: Expanded(
+                                child: Center(
+                                    child: Text(
+                          'Commande\n Envoyer / Retirer',
+                          textAlign: TextAlign.center,
+                        )))),
                         //Nom Responsable
                         DataColumn(
                             label: Expanded(
                           child: Center(
                             child: Text(
-                              'Nom\n du responsable',
+                              'Nom du\n responsable',
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -121,65 +199,135 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                       ],
                       rows: List.generate(widget.dataList.length, (index) {
                         return DataRow(
+                          color: MaterialStateProperty.resolveWith((states) {
+                            if (widget.btnCommandeEnvoyer[index] == true) {
+                              return const Color.fromRGBO(202, 196, 208, 1);
+                            }
+                          }),
                           cells: [
                             //id
-                            DataCell(
-                                Text(widget.dataList[index]['id'].toString())),
+                            DataCell(Center(
+                                child: Text(
+                                    widget.dataList[index]['id'].toString()))),
                             //nom
-                            DataCell(Text(widget.dataList[index]['nom'])),
+                            DataCell(Center(
+                                child: Text(widget.dataList[index]['nom']))),
                             //prenom
-                            DataCell(Text(widget.dataList[index]['prenom'])),
+                            DataCell(Center(
+                                child: Text(widget.dataList[index]['prenom']))),
                             //date
-                            DataCell(Text(
-                                widget.dataList[index]['date'].toString())),
+                            DataCell(Center(
+                              child: Text(
+                                  widget.dataList[index]['date'].toString()),
+                            )),
                             //livraion
-                            DataCell(Text(widget.dataList[index]['nom'])),
+                            DataCell(Center(
+                                child: Text(widget.dataList[index]['nom']))),
                             //transmission
-                            DataCell(IconButton(
-                                icon: widget.btnTransmission[index] == false
-                                    ? const Icon(Icons.check_box_outline_blank)
-                                    : const Icon(
-                                        Icons.check,
-                                        color: Colors.green,
-                                      ),
-                                onPressed: () {
-                                  showBoutonTransmission(index);
-                                })),
+                            DataCell(Center(
+                              child: widget.btnCommandeEnvoyer[index] == false
+                                  ? IconButton(
+                                      icon:
+                                          widget.btnTransmission[index] == false
+                                              ? const Icon(
+                                                  Icons.check_box_outline_blank)
+                                              : const Icon(
+                                                  Icons.check,
+                                                  color: Colors.green,
+                                                  size: 40,
+                                                ),
+                                      onPressed: () {
+                                        showBoutonTransmission(index);
+                                      })
+                                  : widget.btnCommandePret[index] == false
+                                      ? const Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                        )
+                                      : const Icon(
+                                          Icons.check,
+                                          color: Colors.green,
+                                          size: 40,
+                                        ),
+                            )),
                             //Saisie caisse
-                            DataCell(IconButton(
-                                icon: widget.btnSaisiCaisse[index] == false
-                                    ? const Icon(Icons.check_box_outline_blank)
+                            DataCell(Center(
+                              child: widget.btnCommandeEnvoyer[index] == false
+                                  ? IconButton(
+                                      icon:
+                                          widget.btnSaisiCaisse[index] == false
+                                              ? const Icon(
+                                                  Icons.check_box_outline_blank)
+                                              : const Icon(
+                                                  Icons.check,
+                                                  color: Colors.green,
+                                                  size: 40,
+                                                ),
+                                      onPressed: () {
+                                        showBoutonSaisiCaisse(index);
+                                      })
+                                  : widget.btnCommandePret[index] == false
+                                      ? const Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                        )
+                                      : const Icon(
+                                          Icons.check,
+                                          color: Colors.green,
+                                          size: 40,
+                                        ),
+                            )),
+                            //Commande prete
+                            DataCell(Center(
+                              child: widget.btnCommandeEnvoyer[index] == false
+                                  ? IconButton(
+                                      icon:
+                                          widget.btnCommandePret[index] == false
+                                              ? const Icon(
+                                                  Icons.check_box_outline_blank)
+                                              : const Icon(
+                                                  Icons.check,
+                                                  color: Colors.green,
+                                                  size: 40,
+                                                ),
+                                      onPressed: () {
+                                        setState(() {
+                                          widget.btnCommandePret[index] =
+                                              !widget.btnCommandePret[index];
+                                        });
+                                      })
+                                  : widget.btnCommandePret[index] == false
+                                      ? const Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                        )
+                                      : const Icon(
+                                          Icons.check,
+                                          color: Colors.green,
+                                          size: 40,
+                                        ),
+                            )),
+                            //Commande Envoyer
+                            DataCell(Center(
+                                child: widget.btnCommandeEnvoyer[index] == false
+                                    ? IconButton(
+                                        icon: const Icon(
+                                            Icons.check_box_outline_blank),
+                                        onPressed: () {
+                                          showCommandeEnvoyerRetirer(index);
+                                        })
                                     : const Icon(
                                         Icons.check,
                                         color: Colors.green,
-                                      ),
-                                onPressed: () {
-                                  showBoutonSaisiCaisse(index);
-                                })),
-                            //Commande prete
-                            DataCell(IconButton(
-                                icon: widget.btnCommandePret[index] == false
-                                    ? const Icon(Icons.check_box_outline_blank)
-                                    : const Icon(Icons.check),
-                                onPressed: () {
-                                  setState(() {
-                                    widget.btnCommandePret[index] =
-                                        !widget.btnCommandePret[index];
-                                  });
-                                })),
-                            //Commande Envoyer
-                            DataCell(IconButton(
-                                icon: widget.btnCommandeEnvoyer[index] == false
-                                    ? const Icon(Icons.check_box_outline_blank)
-                                    : const Icon(Icons.check),
-                                onPressed: () {
-                                  setState(() {
-                                    widget.btnCommandeEnvoyer[index] =
-                                        !widget.btnCommandeEnvoyer[index];
-                                  });
-                                })),
+                                        size: 40,
+                                      ))),
                             //Nom responsable
-                            DataCell(Text(widget.dataList[index]['nom'])),
+                            DataCell(Center(
+                              child: Text(
+                                widget.loginName,
+                                textAlign: TextAlign.center,
+                              ),
+                            )),
                           ],
                         );
                       }),

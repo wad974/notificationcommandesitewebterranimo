@@ -23,6 +23,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    fetchDataOrders();
+  }
+
   //init http
   List dataList = [];
   late List<bool> selected;
@@ -54,12 +60,6 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       rethrow;
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchDataOrders();
   }
 
   @override
@@ -103,9 +103,9 @@ class _HomePageState extends State<HomePage> {
                       Expanded(
                         child: Container(
                           width: double.infinity,
-                          padding: EdgeInsets.all(50),
+                          padding: const EdgeInsets.all(50),
                           child: Container(
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                                 border: const Border(
                                     right: BorderSide(width: 1),
@@ -131,13 +131,19 @@ class _HomePageState extends State<HomePage> {
                                 ),
 
                                 // liste de tous les commandes
-                                ListAllOrders(
-                                  dataList: dataList,
-                                  btnCommandeEnvoyer: btnCommandeEnvoyer,
-                                  btnCommandePret: btnCommandePret,
-                                  btnSaisiCaisse: btnSaisiCaisse,
-                                  btnTransmission: btnTransmission,
-                                ),
+                                dataList.isEmpty
+                                    // on affiche un indicateur de charge si list eszt vide
+                                    ? const Center(
+                                        child: CircularProgressIndicator())
+                                    //sinon
+                                    : ListAllOrders(
+                                        dataList: dataList,
+                                        btnCommandeEnvoyer: btnCommandeEnvoyer,
+                                        btnCommandePret: btnCommandePret,
+                                        btnSaisiCaisse: btnSaisiCaisse,
+                                        btnTransmission: btnTransmission,
+                                        loginName: loginName,
+                                      )
                               ],
                             ),
                           ),

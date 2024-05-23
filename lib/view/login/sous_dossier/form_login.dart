@@ -134,6 +134,7 @@ class _FormLoginState extends State<FormLogin> {
                 decoration: const InputDecoration(
                   labelText: 'Nom du responsable',
                   icon: Icon(Icons.person),
+                  border: OutlineInputBorder(),
                 ),
               ),
               //deuxieme champ saisi => PASSWORD
