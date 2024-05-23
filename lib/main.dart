@@ -3,6 +3,7 @@
 //
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:notification_app_woocommerce/view/archives/archive_page.dart';
 import 'package:notification_app_woocommerce/view/homepage/homepage.dart';
 //import 'view/homepage/homepage.dart';
 //window
@@ -16,7 +17,6 @@ void main() async {
   await Hive.initFlutter();
   var box = await Hive.openBox('myBox');
 
-  WidgetsFlutterBinding.ensureInitialized();
   // Fenetere Dimension.
   await windowManager.ensureInitialized();
 
@@ -54,6 +54,7 @@ class NotificationWooCommerce extends StatelessWidget {
       routes: {
         LoginPage.routeName: (context) => const LoginPage(),
         HomePage.routeName: (context) => const HomePage(),
+        ArchivesPage.routeName: (context) => const ArchivesPage(),
       },
     );
   }

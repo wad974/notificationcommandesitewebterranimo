@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -23,12 +20,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-    fetchDataOrders();
-  }
-
   //init http
   List dataList = [];
   late List<bool> selected;
@@ -36,6 +27,12 @@ class _HomePageState extends State<HomePage> {
   late List<bool> btnSaisiCaisse;
   late List<bool> btnCommandePret;
   late List<bool> btnCommandeEnvoyer;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDataOrders();
+  }
 
   Future fetchDataOrders() async {
     try {
@@ -80,7 +77,7 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: [
                 // un drawer fixe
-                const DrawerPage(),
+                DrawerPage(loginName: loginName),
                 // un expanded
                 Expanded(
                   child: Column(

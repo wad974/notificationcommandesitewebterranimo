@@ -1,12 +1,15 @@
 // ignore_for_file: must_be_immutable, sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
+import 'package:notification_app_woocommerce/view/archives/archive_page.dart';
+import 'package:notification_app_woocommerce/view/homepage/homepage.dart';
 import 'package:notification_app_woocommerce/view/login/login_page.dart';
 
 class DrawerPage extends StatelessWidget {
   //final Function()? refresh;
+  String loginName;
 
-  const DrawerPage({super.key});
+  DrawerPage({super.key, required this.loginName});
 
   @override
   Widget build(BuildContext context) {
@@ -42,23 +45,39 @@ class DrawerPage extends StatelessWidget {
                     hoverColor: Colors.grey.shade300,
                     iconColor: Colors.red.shade800,
                     onTap: () {
-                      Navigator.pushNamed(context, LoginPage.routeName);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomePage(),
+                          settings: RouteSettings(
+                            arguments: loginName,
+                          ),
+                        ),
+                      );
                     },
                   ),
                   ListTile(
-                    leading: const Icon(Icons.account_circle),
-                    title: const Text('Account'),
+                    leading: const Icon(Icons.archive),
+                    title: const Text('Archives'),
                     hoverColor: Colors.grey.shade300,
                     iconColor: Colors.blue,
                     onTap: () {
-                      Navigator.pushNamed(context, LoginPage.routeName);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ArchivesPage(),
+                          settings: RouteSettings(
+                            arguments: loginName,
+                          ),
+                        ),
+                      );
                     },
                   ),
                   ListTile(
-                    leading: const Icon(Icons.refresh),
-                    title: const Text('Rafraichir'),
+                    leading: const Icon(Icons.settings),
+                    title: const Text('Account'),
                     hoverColor: Colors.grey.shade300,
-                    iconColor: Colors.red.shade500,
+                    iconColor: Colors.black54,
                     onTap: () {
                       Navigator.pushNamed(context, LoginPage.routeName);
                     },

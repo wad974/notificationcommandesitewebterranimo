@@ -1,6 +1,8 @@
-// ignore_for_file: must_be_immutable, avoid_unnecessary_containers
+// ignore_for_file: must_be_immutable, avoid_unnecessary_containers, body_might_complete_normally_nullable
 
 import 'package:flutter/material.dart';
+import 'package:notification_app_woocommerce/Controller/database.dart';
+import 'package:notification_app_woocommerce/model/orders.dart';
 import 'package:notification_app_woocommerce/view/homepage/orders/sousdossier/dialog_bouton.dart';
 
 class ListAllOrders extends StatefulWidget {
@@ -60,7 +62,18 @@ class _ListAllOrdersState extends State<ListAllOrders> {
     }
   }
 
-  void showCommandeEnvoyerRetirer(index) async {
+  void showCommandeEnvoyerRetirer(
+      index,
+      id,
+      nom,
+      prenom,
+      date,
+      methodeDeLivraison,
+      transmissionResponsable,
+      saisieEnCaisse,
+      commandePrete,
+      commandeEnvoyerRetirer,
+      nomDuResponsableEnCharge) async {
     final resultat = await showDialog(
         context: context,
         builder: (context) {
@@ -70,8 +83,37 @@ class _ListAllOrdersState extends State<ListAllOrders> {
           );
         });
     if (resultat == 'sauvegarder') {
+      WidgetsFlutterBinding.ensureInitialized();
       // partie a faire pour stocker dans la basse Sqlite
+      //database appeler
+      DataBase db = DataBase();
+      await db.openSql();
 
+      // instance orders archives à inserer
+      var archivesCommandes = Orders(
+          id: id,
+          nom: nom,
+          prenom: prenom,
+          date: date,
+          methodeDeLivraison: methodeDeLivraison,
+          transmissionResponsable: transmissionResponsable,
+          saisieEnCaisse: saisieEnCaisse,
+          commandePrete: commandePrete,
+          commandeEnvoyerRetirer: commandeEnvoyerRetirer,
+          nomDuResponsableEnCharge: nomDuResponsableEnCharge);
+
+      // et on insere l'archives
+      await db.insertOrders(archivesCommandes);
+
+      //snackbar
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          'Commande archivée avec succées',
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 5),
+      ));
       //fin partie
       setState(() {
         widget.btnCommandeEnvoyer[index] = !widget.btnCommandeEnvoyer[index];
@@ -314,7 +356,18 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                                         icon: const Icon(
                                             Icons.check_box_outline_blank),
                                         onPressed: () {
-                                          showCommandeEnvoyerRetirer(index);
+                                          showCommandeEnvoyerRetirer(
+                                              index,
+                                              widget.dataList[index]['id'],
+                                              widget.dataList[index]['nom'],
+                                              widget.dataList[index]['prenom'],
+                                              widget.dataList[index]['date'],
+                                              widget.dataList[index]['nom'],
+                                              widget.btnTransmission[index],
+                                              widget.btnSaisiCaisse[index],
+                                              widget.btnCommandePret[index],
+                                              widget.btnCommandeEnvoyer[index],
+                                              widget.loginName);
                                         })
                                     : const Icon(
                                         Icons.check,

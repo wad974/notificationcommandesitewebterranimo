@@ -6,12 +6,12 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:hive/hive.dart';
+// import 'package:hive/hive.dart';
 import 'package:notification_app_woocommerce/view/homepage/homepage.dart';
 
 import 'package:window_manager/window_manager.dart';
 
-import '../../../Controller/database.dart';
+// import '../../../Controller/database.dart';
 
 class FormLogin extends StatefulWidget {
   const FormLogin({super.key});
@@ -24,10 +24,10 @@ class _FormLoginState extends State<FormLogin> {
   final GlobalKey<FormState> cleFormulaire = GlobalKey<FormState>();
   //on recupere saisie utilisateur
   final TextEditingController controllerLogin = TextEditingController();
-  //init nosql hive mybox
-  final _myBox = Hive.openBox('myBox');
-  //on recupere database pour stocker les logins de connexion
-  LoginDataBase db = LoginDataBase();
+  // //init nosql hive mybox
+  // final _myBox = Hive.openBox('myBox');
+  // //on recupere database pour stocker les logins de connexion
+  // LoginDataBase db = LoginDataBase();
 
   //creation login pour stocker dans la dans un fichier TXT et recup args
   Future validationFormulaire() async {
