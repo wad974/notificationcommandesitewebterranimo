@@ -10,6 +10,9 @@ import 'package:notification_app_woocommerce/view/homepage/orders/liste_de_tout_
 
 import 'package:notification_app_woocommerce/widget/drawer/drawerpage.dart';
 
+import '../../Controller/database.dart';
+import '../../model/orders.dart';
+
 class HomePage extends StatefulWidget {
   static String routeName = '/';
 
@@ -21,28 +24,50 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   //init http
+  late String erreurCode;
+  bool isLoadingErreur = false;
   List dataList = [];
-  late List<bool> selected;
-  late List<bool> btnTransmission;
-  late List<bool> btnSaisiCaisse;
-  late List<bool> btnCommandePret;
-  late List<bool> btnCommandeEnvoyer;
+  List matchIDs = [];
+  List<bool> selected = [];
+  List<bool> btnTransmission = [];
+  List<bool> btnSaisiCaisse = [];
+  List<bool> btnCommandePret = [];
+  List<bool> btnCommandeEnvoyer = [];
+  List loginNameArchive = [];
+  late String loginName;
+  //database sqlite
+  DataBase db = DataBase();
+  List archivesOrders = [];
 
   @override
   void initState() {
     super.initState();
     fetchDataOrders();
+    db.openSql().then((context) => fetchArchivesOrders());
   }
 
   Future fetchDataOrders() async {
     try {
       http.Response response =
-          await http.get(Uri.parse('http://192.168.1.22:1111/commandes/'));
+          await http.get(Uri.parse('http://192.168.1.23:1111/commandes/'));
 
       if (response.statusCode == 200) {
         // print(json.decode(response.body));
         setState(() {
           dataList = json.decode(response.body);
+          loginName = ModalRoute.of(context)!.settings.arguments.toString();
+          print(loginName);
+          // list pour recuperer les commandes déjà archivé
+          // et vérifié avec les commandes charger
+          List<int> dataListID = dataList.map((e) => e['id'] as int).toList();
+          print('verification : $dataListID');
+          List archivesOrdersID = archivesOrders.map((e) => e.id).toList();
+          print('archivesORders list : $archivesOrdersID');
+
+          matchIDs =
+              dataListID.where((id) => archivesOrdersID.contains(id)).toList();
+
+          print(matchIDs);
           selected = List<bool>.generate(dataList.length, (index) => false);
           btnSaisiCaisse =
               List<bool>.generate(dataList.length, (index) => false);
@@ -52,11 +77,54 @@ class _HomePageState extends State<HomePage> {
               List<bool>.generate(dataList.length, (index) => false);
           btnTransmission =
               List<bool>.generate(dataList.length, (index) => false);
+          loginNameArchive =
+              List<String>.generate(dataList.length, (index) => 'null');
+
+          // on récupere les boutons qui est sois déjà validé ou pas dans archives
+          // avec la boucle foreach
+          dataList.asMap().forEach((index, value) {
+            if (matchIDs.contains(value['id'])) {
+              archivesOrders.asMap().forEach((key, value) {
+                print(
+                    'valeur btn transmission : ${value.transmissionResponsable}');
+                if (value.transmissionResponsable == 1) {
+                  btnTransmission[key] = true;
+                } else if (value.saisieEnCaisse == 1) {
+                  btnSaisiCaisse[key] = true;
+                } else if (value.commandePrete == 1) {
+                  btnCommandePret[key] = true;
+                  // } else if (loginNameArchive.isNotEmpty) {
+                  //   loginNameArchive.asMap().forEach((keylogin, valuelogin) {
+                  //     print(valuelogin);
+                  //     loginNameArchive[keylogin] = value.nomDuResponsableEnCharge;
+                  //   });
+                }
+              });
+              btnCommandeEnvoyer[index] = true;
+            }
+          });
+          print('btnCommandeEnvoyer: $btnCommandeEnvoyer');
+          print('btnTransmission: $btnTransmission');
+          print('loginNameArchive: $loginNameArchive');
         });
       }
     } catch (e) {
-      rethrow;
+      setState(() {
+        isLoadingErreur = true;
+        erreurCode = e.toString();
+      });
+
+      print('Erreur CHARGEMENT : $e');
+      // rethrow;
     }
+  }
+
+  //fetcharchivesorders
+  Future<void> fetchArchivesOrders() async {
+    List<Orders> orders = await db.listesCommandesArchivers();
+    setState(() {
+      archivesOrders = orders;
+    });
   }
 
   @override
@@ -103,44 +171,48 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.all(50),
                           child: Container(
                             padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                border: const Border(
-                                    right: BorderSide(width: 1),
-                                    top: BorderSide(width: 1),
-                                    bottom: BorderSide(width: 1),
-                                    left: BorderSide(width: 1)),
-                                borderRadius: BorderRadius.circular(10)),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 //champ input rechercher
-                                Container(
-                                  padding: EdgeInsets.only(left: 40, top: 10),
-                                  height: 100,
-                                  width: 500,
-                                  child: TextFormField(
-                                    decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        icon: Icon(Icons.search),
-                                        labelText: 'Recherche'),
-                                  ),
-                                ),
+                                // Container(
+                                //   padding: EdgeInsets.only(left: 40, top: 10),
+                                //   height: 100,
+                                //   width: 500,
+                                //   child: TextFormField(
+                                //     decoration: const InputDecoration(
+                                //         border: OutlineInputBorder(),
+                                //         icon: Icon(Icons.search),
+                                //         labelText: 'Recherche'),
+                                //   ),
+                                // ),
 
                                 // liste de tous les commandes
-                                dataList.isEmpty
-                                    // on affiche un indicateur de charge si list eszt vide
-                                    ? const Center(
-                                        child: CircularProgressIndicator())
-                                    //sinon
-                                    : ListAllOrders(
-                                        dataList: dataList,
-                                        btnCommandeEnvoyer: btnCommandeEnvoyer,
-                                        btnCommandePret: btnCommandePret,
-                                        btnSaisiCaisse: btnSaisiCaisse,
-                                        btnTransmission: btnTransmission,
-                                        loginName: loginName,
-                                      )
+                                isLoadingErreur == true
+                                    ? Center(
+                                        child: Text(
+                                        erreurCode,
+                                        style:
+                                            const TextStyle(color: Colors.red),
+                                      ))
+                                    : dataList.isEmpty
+                                        // on affiche un indicateur de charge si list eszt vide
+                                        ? const Center(
+                                            child: CircularProgressIndicator())
+                                        //sinon
+
+                                        : ListAllOrders(
+                                            dataList: dataList,
+                                            matchIDs: matchIDs,
+                                            btnCommandeEnvoyer:
+                                                btnCommandeEnvoyer,
+                                            btnCommandePret: btnCommandePret,
+                                            btnSaisiCaisse: btnSaisiCaisse,
+                                            btnTransmission: btnTransmission,
+                                            loginName: loginName,
+                                            loginNameArchive: loginNameArchive,
+                                          )
                               ],
                             ),
                           ),

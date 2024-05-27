@@ -7,11 +7,13 @@ import 'package:notification_app_woocommerce/view/homepage/orders/sousdossier/di
 
 class ListAllOrders extends StatefulWidget {
   late List dataList;
+  late List matchIDs;
   late List<bool> btnTransmission;
   late List<bool> btnSaisiCaisse;
   late List<bool> btnCommandePret;
   late List<bool> btnCommandeEnvoyer;
   String loginName;
+  List loginNameArchive;
 
   ListAllOrders({
     super.key,
@@ -21,6 +23,8 @@ class ListAllOrders extends StatefulWidget {
     required this.btnSaisiCaisse,
     required this.btnTransmission,
     required this.loginName,
+    required this.matchIDs,
+    required this.loginNameArchive,
   });
 
   @override
@@ -113,7 +117,7 @@ class _ListAllOrdersState extends State<ListAllOrders> {
           textAlign: TextAlign.center,
         ),
         backgroundColor: Colors.green,
-        duration: Duration(seconds: 1),
+        duration: Duration(seconds: 2),
       ));
       //fin partie
       setState(() {
@@ -136,7 +140,7 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                 children: [
                   Expanded(
                     child: DataTable(
-                      showBottomBorder: true,
+                      showBottomBorder: false,
                       headingRowColor: MaterialStateProperty.all(
                           const Color.fromRGBO(192, 69, 61, 1)),
                       columns: const [
@@ -248,6 +252,9 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                               if (widget.btnCommandeEnvoyer[index] == true) {
                                 return const Color.fromRGBO(202, 196, 208, 1);
                               }
+                              if (index.isEven) {
+                                return Colors.blueGrey.withOpacity(0.1);
+                              }
                             }),
                             cells: [
                               //id
@@ -285,7 +292,7 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                                         onPressed: () {
                                           showBoutonTransmission(index);
                                         })
-                                    : widget.btnCommandePret[index] == false
+                                    : widget.btnTransmission[index] == false
                                         ? const Icon(
                                             Icons.close,
                                             color: Colors.red,
@@ -312,7 +319,7 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                                         onPressed: () {
                                           showBoutonSaisiCaisse(index);
                                         })
-                                    : widget.btnCommandePret[index] == false
+                                    : widget.btnSaisiCaisse[index] == false
                                         ? const Icon(
                                             Icons.close,
                                             color: Colors.red,
@@ -400,11 +407,16 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                                         ))),
                               //Nom responsable
                               DataCell(Center(
-                                child: Text(
-                                  widget.loginName,
-                                  textAlign: TextAlign.center,
-                                ),
-                              )),
+                                  child:
+                                      widget.btnCommandeEnvoyer[index] == false
+                                          ? Text(
+                                              widget.loginName,
+                                              textAlign: TextAlign.center,
+                                            )
+                                          : Text(
+                                              widget.loginNameArchive[index],
+                                              textAlign: TextAlign.center,
+                                            ))),
                             ],
                           );
                         },

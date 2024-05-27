@@ -79,4 +79,20 @@ class DataBase {
         ),
     ];
   }
+
+  // function delete
+  Future<void> deleteOrders(int id) async {
+    print('id delete : $id');
+    try {
+      final db = await _database;
+      await db.delete(
+        'orders',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      print('numéros de la ligne supprimer: $db');
+    } catch (e) {
+      print('Erreur lors de la suprresion: $e');
+    }
+  }
 }

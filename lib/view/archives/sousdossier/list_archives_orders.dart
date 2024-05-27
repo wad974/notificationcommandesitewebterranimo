@@ -16,6 +16,7 @@ class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
   DataBase db = DataBase();
   late Orders orders;
   List archivesOrders = [];
+  List<bool> selected = [];
 
   @override
   void initState() {
@@ -25,9 +26,48 @@ class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
 
   Future fetchArchivesOrders() async {
     List<Orders> orders = await db.listesCommandesArchivers();
+
     setState(() {
       archivesOrders = orders;
+      selected = List<bool>.generate(archivesOrders.length, (index) => false);
     });
+  }
+
+  // function delete archives
+  Future<void> deleteArchivesOrder(value, id, index) async {
+    // final idASupprimer = archivesOrders[index].id;
+    final resultat = await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Row(
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context, 'annuler');
+                    },
+                    child: Text('annuler')),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context, 'Supprimer');
+                  },
+                  child: Text('Supprimer'),
+                ),
+              ],
+            ),
+          );
+        });
+
+    if (resultat == 'Supprimer') {
+      // database function delete
+      setState(() {
+        // selected[index] = !selected[index];
+        db.deleteOrders(id);
+        archivesOrders.removeAt(index);
+        selected.removeAt(index);
+      });
+    }
   }
 
   @override
@@ -41,6 +81,7 @@ class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
                 children: [
                   Expanded(
                     child: DataTable(
+                      sortAscending: false,
                       dataRowColor:
                           MaterialStateProperty.all(Colors.grey.shade200),
                       showBottomBorder: true,
@@ -176,26 +217,69 @@ class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
                               DataCell(Center(
                                   child: Text(archivesOrders[index]
                                       .methodeDeLivraison))),
+                              DataCell(
+                                Center(
+                                  child: archivesOrders[index]
+                                              .transmissionResponsable ==
+                                          1
+                                      ? const Icon(
+                                          Icons.check,
+                                          color: Colors.green,
+                                        )
+                                      : const Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                        ),
+                                ),
+                              ),
+                              DataCell(
+                                Center(
+                                  child:
+                                      archivesOrders[index].saisieEnCaisse == 1
+                                          ? const Icon(
+                                              Icons.check,
+                                              color: Colors.green,
+                                            )
+                                          : const Icon(
+                                              Icons.close,
+                                              color: Colors.red,
+                                            ),
+                                ),
+                              ),
+                              DataCell(
+                                Center(
+                                  child:
+                                      archivesOrders[index].commandePrete == 1
+                                          ? const Icon(
+                                              Icons.check,
+                                              color: Colors.green,
+                                            )
+                                          : const Icon(
+                                              Icons.close,
+                                              color: Colors.red,
+                                            ),
+                                ),
+                              ),
                               DataCell(Center(
-                                  child: Text(archivesOrders[index]
-                                      .transmissionResponsable
-                                      .toString()))),
-                              DataCell(Center(
-                                  child: Text(archivesOrders[index]
-                                      .saisieEnCaisse
-                                      .toString()))),
-                              DataCell(Center(
-                                  child: Text(archivesOrders[index]
-                                      .commandePrete
-                                      .toString()))),
-                              DataCell(Center(
-                                  child: Text(archivesOrders[index]
-                                      .commandeEnvoyerRetirer
-                                      .toString()))),
+                                child: archivesOrders[index].commandePrete == 1
+                                    ? const Icon(
+                                        Icons.check,
+                                        color: Colors.green,
+                                      )
+                                    : const Icon(
+                                        Icons.close,
+                                        color: Colors.red,
+                                      ),
+                              )),
                               DataCell(Center(
                                   child: Text(archivesOrders[index]
                                       .nomDuResponsableEnCharge))),
                             ],
+                            selected: selected[index],
+                            onSelectChanged: (value) {
+                              int id = archivesOrders[index].id;
+                              deleteArchivesOrder(value, id, index);
+                            },
                           );
                         },
                       ),
