@@ -1,4 +1,11 @@
+// ignore_for_file: unused_local_variable
+
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:windows_notification/notification_message.dart';
+import 'package:windows_notification/windows_notification.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -23,6 +30,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  //notification windows uniquement
+  List siCommandeExiste = [];
   //init http
   late String erreurCode;
   bool isLoadingErreur = false;
@@ -44,9 +53,12 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     fetchDataOrders();
     db.openSql().then((context) => fetchArchivesOrders());
+
+    //notification
+    verificationNouveauCommande();
   }
 
-  Future fetchDataOrders() async {
+  Future<void> fetchDataOrders() async {
     try {
       http.Response response =
           await http.get(Uri.parse('http://192.168.1.23:1111/commandes/'));
@@ -55,19 +67,24 @@ class _HomePageState extends State<HomePage> {
         // print(json.decode(response.body));
         setState(() {
           dataList = json.decode(response.body);
+          //verification pour notification
+
+          if (siCommandeExiste.length != dataList.length) {
+            // Nouvelle commande détectée
+            notificationWindows('Nouvelle', 'Une nouvelle commandes passé');
+          }
+
           loginName = ModalRoute.of(context)!.settings.arguments.toString();
-          print(loginName);
+
           // list pour recuperer les commandes déjà archivé
           // et vérifié avec les commandes charger
           List<int> dataListID = dataList.map((e) => e['id'] as int).toList();
-          print('verification : $dataListID');
+
           List archivesOrdersID = archivesOrders.map((e) => e.id).toList();
-          print('archivesORders list : $archivesOrdersID');
 
           matchIDs =
               dataListID.where((id) => archivesOrdersID.contains(id)).toList();
 
-          print(matchIDs);
           selected = List<bool>.generate(dataList.length, (index) => false);
           btnSaisiCaisse =
               List<bool>.generate(dataList.length, (index) => false);
@@ -85,27 +102,17 @@ class _HomePageState extends State<HomePage> {
           dataList.asMap().forEach((index, value) {
             if (matchIDs.contains(value['id'])) {
               archivesOrders.asMap().forEach((key, value) {
-                print(
-                    'valeur btn transmission : ${value.transmissionResponsable}');
                 if (value.transmissionResponsable == 1) {
                   btnTransmission[key] = true;
                 } else if (value.saisieEnCaisse == 1) {
                   btnSaisiCaisse[key] = true;
                 } else if (value.commandePrete == 1) {
                   btnCommandePret[key] = true;
-                  // } else if (loginNameArchive.isNotEmpty) {
-                  //   loginNameArchive.asMap().forEach((keylogin, valuelogin) {
-                  //     print(valuelogin);
-                  //     loginNameArchive[keylogin] = value.nomDuResponsableEnCharge;
-                  //   });
                 }
               });
               btnCommandeEnvoyer[index] = true;
             }
           });
-          print('btnCommandeEnvoyer: $btnCommandeEnvoyer');
-          print('btnTransmission: $btnTransmission');
-          print('loginNameArchive: $loginNameArchive');
         });
       }
     } catch (e) {
@@ -113,8 +120,6 @@ class _HomePageState extends State<HomePage> {
         isLoadingErreur = true;
         erreurCode = e.toString();
       });
-
-      print('Erreur CHARGEMENT : $e');
       // rethrow;
     }
   }
@@ -125,6 +130,38 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       archivesOrders = orders;
     });
+  }
+
+  //shownotificationwindow
+  Future<void> notificationWindows(String title, String body) async {
+    final notification = WindowsNotification(applicationId: "www.terranimo.re");
+    NotificationMessage message = NotificationMessage.fromPluginTemplate(
+      "test1",
+      title,
+      body,
+    );
+
+    await notification.showNotificationPluginTemplate(message);
+  }
+
+  Future<void> fetchNewDataOrders() async {
+    try {
+      http.Response response =
+          await http.get(Uri.parse('http://192.168.1.23:1111/commandes/'));
+      if (response.statusCode == 200) {
+        siCommandeExiste = json.decode(response.body);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //timer
+  void verificationNouveauCommande() {
+    const duration = Duration(seconds: 10); // intervalle de seconde
+    const tempsRefresh = Duration(minutes: 1); 
+    Timer.periodic(duration, (timer) => fetchNewDataOrders());
+    Timer.periodic(tempsRefresh, (timer) => fetchDataOrders());
   }
 
   @override
