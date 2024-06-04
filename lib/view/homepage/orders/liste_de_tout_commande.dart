@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable, avoid_unnecessary_containers, body_might_complete_normally_nullable, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:notification_app_woocommerce/Controller/database.dart';
 import 'package:notification_app_woocommerce/Controller/http.dart';
 import 'package:notification_app_woocommerce/model/orders.dart';
