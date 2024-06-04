@@ -32,6 +32,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   //notification windows uniquement
   List siCommandeExiste = [];
+
   //init http
   late String erreurCode;
   bool isLoadingErreur = false;
@@ -60,14 +61,17 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchDataOrders() async {
     try {
-      http.Response response =
-          await http.get(Uri.parse('http://192.168.1.23:1111/commandes/'));
+      http.Response response = await http
+          .get(Uri.parse('http://192.168.1.28:1111/commandes'), headers: {
+        'Authorization': '',
+      });
 
       if (response.statusCode == 200) {
         // print(json.decode(response.body));
         setState(() {
           dataList = json.decode(response.body);
           //verification pour notification
+          print(dataList[0]['status']);
 
           if (siCommandeExiste.length != dataList.length) {
             // Nouvelle commande détectée
@@ -111,6 +115,7 @@ class _HomePageState extends State<HomePage> {
                 }
               });
               btnCommandeEnvoyer[index] = true;
+              
             }
           });
         });
@@ -147,21 +152,21 @@ class _HomePageState extends State<HomePage> {
   Future<void> fetchNewDataOrders() async {
     try {
       http.Response response =
-          await http.get(Uri.parse('http://192.168.1.23:1111/commandes/'));
+          await http.get(Uri.parse('http://192.168.1.28:1111/commandes'));
       if (response.statusCode == 200) {
         siCommandeExiste = json.decode(response.body);
       }
     } catch (e) {
-      rethrow;
+      print('erreur lors du timerhttp : $e');
     }
   }
 
   //timer
   void verificationNouveauCommande() {
-    const duration = Duration(seconds: 10); // intervalle de seconde
-    const tempsRefresh = Duration(minutes: 1); 
+    const duration = Duration(minutes: 5); // intervalle de seconde
+    const tempsRefresh = Duration(minutes: 1);
     Timer.periodic(duration, (timer) => fetchNewDataOrders());
-    Timer.periodic(tempsRefresh, (timer) => fetchDataOrders());
+    // Timer.periodic(tempsRefresh, (timer) => fetchDataOrders());
   }
 
   @override

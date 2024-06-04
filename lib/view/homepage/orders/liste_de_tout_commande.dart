@@ -1,7 +1,9 @@
 // ignore_for_file: must_be_immutable, avoid_unnecessary_containers, body_might_complete_normally_nullable, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:notification_app_woocommerce/Controller/database.dart';
+import 'package:notification_app_woocommerce/Controller/http.dart';
 import 'package:notification_app_woocommerce/model/orders.dart';
 import 'package:notification_app_woocommerce/view/homepage/orders/sousdossier/dialog_bouton.dart';
 
@@ -32,6 +34,13 @@ class ListAllOrders extends StatefulWidget {
 }
 
 class _ListAllOrdersState extends State<ListAllOrders> {
+  //http requet
+  RequeteHttp req = RequeteHttp();
+  //status
+  String statusProcessing = 'processing';
+  String statusCompleted = 'completed';
+  String updateMessage = '';
+
   //showBoutonTransmission
   void showBoutonTransmission(index) async {
     final resultat = await showDialog(
@@ -62,11 +71,83 @@ class _ListAllOrdersState extends State<ListAllOrders> {
     if (resultat == 'sauvegarder') {
       setState(() {
         widget.btnSaisiCaisse[index] = !widget.btnSaisiCaisse[index];
+        widget.btnSaisiCaisse[index] = true;
       });
     }
   }
 
-  // bouton Commande Envoyer
+  //bouton commande prete
+  Future<void> showCommandePret(int index, int id) async {
+    final resultat = await showDialog(
+        context: context,
+        builder: (context) {
+          return DialogBouton(
+            index: index,
+            btn: widget.btnCommandePret,
+          );
+        });
+    if (resultat == 'sauvegarder') {
+      // on affiche la premier boite de dialogue
+
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text('Mise à jour du statut en cours...'),
+              ],
+            ),
+          );
+        },
+      );
+      print('contenu id apres bouton :$id');
+      print('contenu id apres bouton :$statusProcessing');
+
+      try {
+        await req.updateStatusCommandePret(statusProcessing, id);
+        setState(() {
+          widget.btnCommandePret[index] = !widget.btnCommandePret[index];
+          widget.btnCommandePret[index] = true;
+          updateMessage = req.message[0]['message'];
+        });
+      } catch (e) {
+        setState(() {
+          updateMessage = 'Erreur lors de la mise à jour du statut';
+        });
+      } finally {
+        Navigator.of(context).pop();
+        showDialog(
+          barrierDismissible: true,
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.verified,
+                    color: Colors.green,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    updateMessage,
+                    style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      }
+    }
+  }
+
+  // bouton Commande Envoyer/Retirer
   void showCommandeEnvoyerRetirer(
       int index,
       int id,
@@ -278,87 +359,61 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                                   child: Text(widget.dataList[index]['nom']))),
                               //transmission
                               DataCell(Center(
-                                child: widget.btnCommandeEnvoyer[index] == false
+                                child: widget.btnCommandeEnvoyer[index] ==
+                                            false &&
+                                        widget.dataList[index]['status'] ==
+                                            'on-hold' &&
+                                        widget.btnTransmission[index] == false
                                     ? IconButton(
-                                        icon: widget.btnTransmission[index] ==
-                                                false
-                                            ? const Icon(
-                                                Icons.check_box_outline_blank)
-                                            : const Icon(
-                                                Icons.check,
-                                                color: Colors.green,
-                                                size: 40,
-                                              ),
+                                        icon: const Icon(
+                                            Icons.check_box_outline_blank),
                                         onPressed: () {
                                           showBoutonTransmission(index);
                                         })
-                                    : widget.btnTransmission[index] == false
-                                        ? const Icon(
-                                            Icons.close,
-                                            color: Colors.red,
-                                          )
-                                        : const Icon(
-                                            Icons.check,
-                                            color: Colors.green,
-                                            size: 40,
-                                          ),
+                                    : const Icon(
+                                        Icons.check,
+                                        color: Colors.green,
+                                        size: 40,
+                                      ),
                               )),
                               //Saisie caisse
                               DataCell(Center(
-                                child: widget.btnCommandeEnvoyer[index] == false
+                                child: widget.btnCommandeEnvoyer[index] ==
+                                            false &&
+                                        widget.dataList[index]['status'] ==
+                                            'on-hold' &&
+                                        widget.btnSaisiCaisse[index] == false
                                     ? IconButton(
-                                        icon: widget.btnSaisiCaisse[index] ==
-                                                false
-                                            ? const Icon(
-                                                Icons.check_box_outline_blank)
-                                            : const Icon(
-                                                Icons.check,
-                                                color: Colors.green,
-                                                size: 40,
-                                              ),
+                                        icon: const Icon(
+                                            Icons.check_box_outline_blank),
                                         onPressed: () {
                                           showBoutonSaisiCaisse(index);
                                         })
-                                    : widget.btnSaisiCaisse[index] == false
-                                        ? const Icon(
-                                            Icons.close,
-                                            color: Colors.red,
-                                          )
-                                        : const Icon(
-                                            Icons.check,
-                                            color: Colors.green,
-                                            size: 40,
-                                          ),
+                                    : const Icon(
+                                        Icons.check,
+                                        color: Colors.green,
+                                        size: 40,
+                                      ),
                               )),
                               //Commande prete
                               DataCell(Center(
-                                child: widget.btnCommandeEnvoyer[index] == false
+                                child: widget.btnCommandeEnvoyer[index] ==
+                                            false &&
+                                        widget.dataList[index]['status'] ==
+                                            'on-hold' &&
+                                        widget.btnCommandePret[index] == false
                                     ? IconButton(
-                                        icon: widget.btnCommandePret[index] ==
-                                                false
-                                            ? const Icon(
-                                                Icons.check_box_outline_blank)
-                                            : const Icon(
-                                                Icons.check,
-                                                color: Colors.green,
-                                                size: 40,
-                                              ),
+                                        icon: const Icon(
+                                            Icons.check_box_outline_blank),
                                         onPressed: () {
-                                          setState(() {
-                                            widget.btnCommandePret[index] =
-                                                !widget.btnCommandePret[index];
-                                          });
+                                          showCommandePret(index,
+                                              widget.dataList[index]['id']);
                                         })
-                                    : widget.btnCommandePret[index] == false
-                                        ? const Icon(
-                                            Icons.close,
-                                            color: Colors.red,
-                                          )
-                                        : const Icon(
-                                            Icons.check,
-                                            color: Colors.green,
-                                            size: 40,
-                                          ),
+                                    : const Icon(
+                                        Icons.check,
+                                        color: Colors.green,
+                                        size: 40,
+                                      ),
                               )),
                               //Commande Envoyer
                               DataCell(Center(
