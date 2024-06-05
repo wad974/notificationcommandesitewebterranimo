@@ -41,11 +41,12 @@ class _FormLoginState extends State<FormLogin> {
       //on utilise navigator pushNamed
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
+        PageRouteBuilder(
+          pageBuilder: (context, __, ___) => const HomePage(),
           settings: RouteSettings(
             arguments: controllerLogin.text,
           ),
+          transitionDuration: const Duration(seconds: 0),
         ),
       );
     }

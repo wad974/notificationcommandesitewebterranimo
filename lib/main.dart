@@ -3,6 +3,8 @@
 //
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:notification_app_woocommerce/Controller/params.dart';
+import 'package:notification_app_woocommerce/view/account/accountpage.dart';
 import 'package:notification_app_woocommerce/view/archives/archive_page.dart';
 import 'package:notification_app_woocommerce/view/homepage/homepage.dart';
 //import 'view/homepage/homepage.dart';
@@ -13,6 +15,8 @@ import 'view/login/login_page.dart';
 
 //void main
 void main() async {
+ 
+
   //init the hive
   await Hive.initFlutter();
   var box = await Hive.openBox('myBox');
@@ -55,6 +59,7 @@ class NotificationWooCommerce extends StatelessWidget {
         LoginPage.routeName: (context) => const LoginPage(),
         HomePage.routeName: (context) => const HomePage(),
         ArchivesPage.routeName: (context) => const ArchivesPage(),
+        AccountPage.routeName: (context) => const AccountPage(),
       },
     );
   }

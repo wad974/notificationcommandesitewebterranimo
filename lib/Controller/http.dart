@@ -4,6 +4,9 @@ import 'package:http/http.dart' as http;
 
 class RequeteHttp {
   List message = [];
+  String url = '';
+
+  
 
   //function future update commandePrete
   Future<void> updateStatusCommandePret(String status, int id) async {
