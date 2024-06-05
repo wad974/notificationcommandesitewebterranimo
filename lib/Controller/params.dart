@@ -1,5 +1,6 @@
+// ignore_for_file: unnecessary_import, avoid_print
+
 import 'package:flutter/material.dart';
-import 'package:notification_app_woocommerce/Controller/database.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -9,8 +10,6 @@ import '../model/config_param.dart';
 class ParamsDatabase {
   //init dabase
   late Database _db;
-  // init model params
-  late Params _params;
 
   Future<void> openSqlParams() async {
     // Initialiser sqflite pour l'utilisation avec ffi
