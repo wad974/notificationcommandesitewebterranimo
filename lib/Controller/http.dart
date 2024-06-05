@@ -21,7 +21,6 @@ class RequeteHttp {
     //conditions if erreur
     if (response.statusCode == 200) {
       print(response.body);
-      print('Update ok');
       message = json.decode(response.body);
     } else {
       throw Exception('Erreur lors la mise à jour du status');

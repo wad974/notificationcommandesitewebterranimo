@@ -97,8 +97,6 @@ class _HomePageState extends State<HomePage> {
               List<bool>.generate(dataList.length, (index) => false);
           btnTransmission =
               List<bool>.generate(dataList.length, (index) => false);
-          loginNameArchive =
-              List<String>.generate(dataList.length, (index) => 'null');
 
           // on récupere les boutons qui est sois déjà validé ou pas dans archives
           // avec la boucle foreach
@@ -116,6 +114,7 @@ class _HomePageState extends State<HomePage> {
               btnCommandeEnvoyer[index] = true;
             }
           });
+          print('Voici les nom archives :$loginNameArchive');
         });
       }
     } catch (e) {
@@ -251,7 +250,6 @@ class _HomePageState extends State<HomePage> {
                                             btnSaisiCaisse: btnSaisiCaisse,
                                             btnTransmission: btnTransmission,
                                             loginName: loginName,
-                                            loginNameArchive: loginNameArchive,
                                           )
                               ],
                             ),

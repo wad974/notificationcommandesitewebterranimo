@@ -72,7 +72,7 @@ class DialogBoutonFinal extends StatelessWidget {
       ),
       title: Text(
         btn[index] == false
-            ? 'Etes-vous sûr de cloturé la commande ?\n (cette action est irréversible, merci de faire valider la transmission !)'
+            ? 'Etes-vous sûr de cloturé la commande ?'
             : 'Voulez-vous annuler ?',
         style: TextStyle(color: Colors.grey.shade900),
       ),
@@ -105,6 +105,51 @@ class DialogBoutonFinal extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// dialog circular
+class DialogCircular extends StatelessWidget {
+  const DialogCircular({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 20),
+          Text('Mise à jour du statut en cours...'),
+        ],
+      ),
+    );
+  }
+}
+
+class DialogUpdateMessage extends StatelessWidget {
+  late String updateMessage;
+  DialogUpdateMessage({super.key, required this.updateMessage});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.verified,
+            color: Colors.green,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            updateMessage,
+            style: const TextStyle(
+                color: Colors.grey, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }

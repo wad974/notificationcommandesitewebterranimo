@@ -14,7 +14,6 @@ class ListAllOrders extends StatefulWidget {
   late List<bool> btnCommandePret;
   late List<bool> btnCommandeEnvoyer;
   String loginName;
-  List loginNameArchive;
 
   ListAllOrders({
     super.key,
@@ -25,7 +24,6 @@ class ListAllOrders extends StatefulWidget {
     required this.btnTransmission,
     required this.loginName,
     required this.matchIDs,
-    required this.loginNameArchive,
   });
 
   @override
@@ -92,20 +90,11 @@ class _ListAllOrdersState extends State<ListAllOrders> {
         barrierDismissible: false,
         context: context,
         builder: (context) {
-          return const AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 20),
-                Text('Mise à jour du statut en cours...'),
-              ],
-            ),
-          );
+          return const DialogCircular();
         },
       );
-      print('contenu id apres bouton :$id');
-      print('contenu id apres bouton :$statusProcessing');
+      // print('contenu id apres bouton :$id');
+      // print('contenu id apres bouton :$statusProcessing');
 
       try {
         await req.updateStatusCommandePret(statusProcessing, id);
@@ -124,22 +113,7 @@ class _ListAllOrdersState extends State<ListAllOrders> {
           barrierDismissible: true,
           context: context,
           builder: (context) {
-            return AlertDialog(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.verified,
-                    color: Colors.green,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    updateMessage,
-                    style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            );
+            return DialogUpdateMessage(updateMessage: updateMessage);
           },
         );
       }
@@ -168,12 +142,6 @@ class _ListAllOrdersState extends State<ListAllOrders> {
           );
         });
     if (resultat == 'sauvegarder') {
-      WidgetsFlutterBinding.ensureInitialized();
-      // partie a faire pour stocker dans la basse Sqlite
-      //database appeler
-      DataBase db = DataBase();
-      await db.openSql();
-
       // instance orders archives à inserer
       var archivesCommandes = Orders(
           id: id,
@@ -186,23 +154,55 @@ class _ListAllOrdersState extends State<ListAllOrders> {
           commandePrete: commandePrete,
           commandeEnvoyerRetirer: commandeEnvoyerRetirer,
           nomDuResponsableEnCharge: nomDuResponsableEnCharge);
+      // alertdialog circularProgressionIndicator
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            return DialogCircular();
+          });
 
-      // et on insere l'archives
-      await db.insertOrders(archivesCommandes);
+      // try catch finally
+      try {
+        WidgetsFlutterBinding.ensureInitialized();
+        // partie a faire pour stocker dans la basse Sqlite
+        //database appeler
+        DataBase db = DataBase();
+        await db.openSql();
 
-      //snackbar
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(
-          'Commande archivée avec succées',
-          textAlign: TextAlign.center,
-        ),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
-      ));
-      //fin partie
-      setState(() {
-        widget.btnCommandeEnvoyer[index] = !widget.btnCommandeEnvoyer[index];
-      });
+        // et on insere l'archives
+        await db.insertOrders(archivesCommandes);
+        // reqAPI
+        await req.updateStatusCommandePret(statusCompleted, id);
+        // setstate mise a jour du bouton + stockage du message
+        setState(() {
+          widget.btnCommandeEnvoyer[index] = !widget.btnCommandeEnvoyer[index];
+          updateMessage = req.message[0]['message'];
+        });
+      } catch (e) {
+        setState(() {
+          updateMessage = 'Erreur lors de la mise à jour du statut';
+        });
+      } finally {
+        //on enleve alert déjà en place
+        Navigator.pop(context);
+        await showDialog(
+            context: context,
+            builder: (context) {
+              return DialogUpdateMessage(updateMessage: updateMessage);
+            });
+
+        //snackbar
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+            'Commande archivée avec succées',
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ));
+        //fin partie
+      }
     }
   }
 
@@ -467,8 +467,8 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                                               widget.loginName,
                                               textAlign: TextAlign.center,
                                             )
-                                          : Text(
-                                              widget.loginNameArchive[index],
+                                          : const Text(
+                                              'Voir archives',
                                               textAlign: TextAlign.center,
                                             ))),
                             ],
