@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:notification_app_woocommerce/Controller/http.dart';
 import 'package:notification_app_woocommerce/model/config_param.dart';
 
 import '../../Controller/params.dart';
@@ -25,6 +26,8 @@ class _AccountPageState extends State<AccountPage> {
   final ParamsDatabase _db = ParamsDatabase();
   //List Params
   List configList = [];
+  //init requetteHTTP
+  final RequeteHttp req = RequeteHttp();
 
   @override
   void initState() {
@@ -47,7 +50,10 @@ class _AccountPageState extends State<AccountPage> {
       setState(() {
         insertDataApi(input.text);
         const duration = Duration(seconds: 1);
-        Timer.periodic(duration, (timer) => afficheParams());
+        Timer.periodic(duration, (timer) {
+          afficheParams();
+          timer.cancel();
+        });
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -62,6 +68,7 @@ class _AccountPageState extends State<AccountPage> {
     int id = 0;
     var url_api = Params(id: id, url: url);
     await _db.insertParams(url_api);
+    await req.postUrlApi(url.toString());
   }
 
   // affiche les params

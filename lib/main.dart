@@ -15,8 +15,6 @@ import 'view/login/login_page.dart';
 
 //void main
 void main() async {
- 
-
   //init the hive
   await Hive.initFlutter();
   var box = await Hive.openBox('myBox');

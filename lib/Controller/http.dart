@@ -4,9 +4,28 @@ import 'package:http/http.dart' as http;
 
 class RequeteHttp {
   List message = [];
-  String url = '';
+  String baseUrl = '';
 
-  
+  //function post lien api
+  Future<void> postUrlApi(String url) async {
+    print('y as quoi dedans : $url');
+
+    final response = await http.post(
+      Uri.parse('http://192.168.1.28:1111/urlApi'),
+      headers: {'Content-type': 'application/json'},
+      body: jsonEncode(
+        {
+          'url': url,
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      message = jsonDecode(response.body);
+    } else {
+      print('erreur lors du post');
+    }
+  }
 
   //function future update commandePrete
   Future<void> updateStatusCommandePret(String status, int id) async {
