@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Controller/database.dart';
@@ -12,6 +11,8 @@ class ArchivesOrdersList extends StatefulWidget {
 }
 
 class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
+  //delete actif
+  final bool delete = false;
   //db
   DataBase db = DataBase();
   late Orders orders;
@@ -70,12 +71,17 @@ class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
     }
   }
 
+  // function print à faire
+
+  // -> ici
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: SingleChildScrollView(
         child: Column(
           children: [
+            //table
             Container(
               child: Row(
                 children: [
@@ -202,7 +208,6 @@ class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
                       rows: List.generate(
                         archivesOrders.length,
                         (index) {
-                          print('liste generé : $index');
                           return DataRow(
                             cells: [
                               DataCell(Center(
@@ -275,11 +280,13 @@ class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
                                   child: Text(archivesOrders[index]
                                       .nomDuResponsableEnCharge))),
                             ],
-                            selected: selected[index],
-                            onSelectChanged: (value) {
-                              int id = archivesOrders[index].id;
-                              deleteArchivesOrder(value, id, index);
-                            },
+                            // selected: selected[index],
+                            // onSelectChanged: (value) {
+                            //   int id = archivesOrders[index].id;
+                            //   if (delete == true) {
+                            //     deleteArchivesOrder(value, id, index);
+                            //   }
+                            // },
                           );
                         },
                       ),

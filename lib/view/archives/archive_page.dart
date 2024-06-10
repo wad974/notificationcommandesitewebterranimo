@@ -6,10 +6,15 @@ import '../../widget/drawer/drawerpage.dart';
 import '../header.dart';
 import 'sousdossier/list_archives_orders.dart';
 
-class ArchivesPage extends StatelessWidget {
+class ArchivesPage extends StatefulWidget {
   static String routeName = 'archives';
   const ArchivesPage({super.key});
 
+  @override
+  State<ArchivesPage> createState() => _ArchivesPageState();
+}
+
+class _ArchivesPageState extends State<ArchivesPage> {
   @override
   Widget build(BuildContext context) {
     //on recuperer les données de navigator.pushNamed

@@ -415,50 +415,60 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                                       ),
                               )),
                               //Commande Envoyer
-                              DataCell(Center(
-                                  child: widget.btnCommandeEnvoyer[index] ==
-                                          false
-                                      ? IconButton(
-                                          icon: const Icon(
-                                              Icons.check_box_outline_blank),
-                                          onPressed: () {
-                                            int boutonTransmission;
-                                            widget.btnTransmission[index]
-                                                ? boutonTransmission = 1
-                                                : boutonTransmission = 0;
-                                            int boutonSaisi;
-                                            widget.btnSaisiCaisse[index]
-                                                ? boutonSaisi = 1
-                                                : boutonSaisi = 0;
-                                            int boutonPret;
-                                            widget.btnCommandePret[index]
-                                                ? boutonPret = 1
-                                                : boutonPret = 0;
+                              DataCell(
+                                Center(
+                                  child: widget.dataList[index]['status'] !=
+                                          'completed'
+                                      ? widget.btnCommandeEnvoyer[index] ==
+                                              false
+                                          ? IconButton(
+                                              icon: const Icon(Icons
+                                                  .check_box_outline_blank),
+                                              onPressed: () {
+                                                int boutonTransmission;
+                                                widget.btnTransmission[index]
+                                                    ? boutonTransmission = 1
+                                                    : boutonTransmission = 0;
+                                                int boutonSaisi;
+                                                widget.btnSaisiCaisse[index]
+                                                    ? boutonSaisi = 1
+                                                    : boutonSaisi = 0;
+                                                int boutonPret;
+                                                widget.btnCommandePret[index]
+                                                    ? boutonPret = 1
+                                                    : boutonPret = 0;
 
-                                            int boutonEnvoyer;
-                                            widget.btnCommandeEnvoyer[index]
-                                                ? boutonEnvoyer = 0
-                                                : boutonEnvoyer = 1;
+                                                int boutonEnvoyer;
+                                                widget.btnCommandeEnvoyer[index]
+                                                    ? boutonEnvoyer = 0
+                                                    : boutonEnvoyer = 1;
 
-                                            showCommandeEnvoyerRetirer(
-                                                index,
-                                                widget.dataList[index]['id'],
-                                                widget.dataList[index]['nom'],
-                                                widget.dataList[index]
-                                                    ['prenom'],
-                                                widget.dataList[index]['date'],
-                                                widget.dataList[index]['nom'],
-                                                boutonTransmission,
-                                                boutonSaisi,
-                                                boutonPret,
-                                                boutonEnvoyer,
-                                                widget.loginName);
-                                          })
-                                      : const Icon(
-                                          Icons.check,
-                                          color: Colors.green,
-                                          size: 40,
-                                        ))),
+                                                showCommandeEnvoyerRetirer(
+                                                    index,
+                                                    widget.dataList[index]
+                                                        ['id'],
+                                                    widget.dataList[index]
+                                                        ['nom'],
+                                                    widget.dataList[index]
+                                                        ['prenom'],
+                                                    widget.dataList[index]
+                                                        ['date'],
+                                                    widget.dataList[index]
+                                                        ['nom'],
+                                                    boutonTransmission,
+                                                    boutonSaisi,
+                                                    boutonPret,
+                                                    boutonEnvoyer,
+                                                    widget.loginName);
+                                              })
+                                          : const Icon(
+                                              Icons.check,
+                                              color: Colors.green,
+                                              size: 40,
+                                            )
+                                      : const Text('Terminée'),
+                                ),
+                              ),
                               //Nom responsable
                               DataCell(Center(
                                   child:

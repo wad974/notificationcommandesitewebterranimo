@@ -151,7 +151,8 @@ class _AccountPageState extends State<AccountPage> {
                                                       const InputDecoration(
                                                     border:
                                                         OutlineInputBorder(),
-                                                    labelText: 'Url API',
+                                                    labelText:
+                                                        'API WOOCOMMERCE',
                                                     icon: Icon(Icons.link),
                                                   ),
                                                   validator: (value) {
@@ -179,7 +180,7 @@ class _AccountPageState extends State<AccountPage> {
                                                                 Colors.white),
                                                         backgroundColor:
                                                             MaterialStateProperty.all(
-                                                                Color.fromRGBO(
+                                                                const Color.fromRGBO(
                                                                     192, 69, 61, 1)),
                                                         shape: MaterialStateProperty.all(
                                                             RoundedRectangleBorder(
@@ -202,9 +203,10 @@ class _AccountPageState extends State<AccountPage> {
                                               itemBuilder: (context, index) {
                                                 print(configList[index].url);
                                                 return Text(
-                                                    ' url API : ${configList[index].url}');
+                                                    'URL API WOOCOMMERCE : ${configList[index].url}');
                                               }),
                                         ),
+
                                       ],
                                     ))
                               ],

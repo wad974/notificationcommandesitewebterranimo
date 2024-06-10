@@ -3,7 +3,6 @@
 //
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:notification_app_woocommerce/Controller/params.dart';
 import 'package:notification_app_woocommerce/view/account/accountpage.dart';
 import 'package:notification_app_woocommerce/view/archives/archive_page.dart';
 import 'package:notification_app_woocommerce/view/homepage/homepage.dart';

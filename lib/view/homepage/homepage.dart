@@ -60,10 +60,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchDataOrders() async {
     try {
-      http.Response response = await http
-          .get(Uri.parse('http://192.168.1.28:1111/commandes'), headers: {
-        'Authorization': '',
-      });
+      http.Response response =
+          await http.get(Uri.parse('http://192.168.1.28:1111/commandes'));
 
       if (response.statusCode == 200) {
         // print(json.decode(response.body));
@@ -71,11 +69,6 @@ class _HomePageState extends State<HomePage> {
           dataList = json.decode(response.body);
           //verification pour notification
           print(dataList[0]['status']);
-
-          if (siCommandeExiste.length != dataList.length) {
-            // Nouvelle commande détectée
-            notificationWindows('Nouvelle', 'Une nouvelle commandes passé');
-          }
 
           loginName = ModalRoute.of(context)!.settings.arguments.toString();
 
@@ -89,18 +82,21 @@ class _HomePageState extends State<HomePage> {
               dataListID.where((id) => archivesOrdersID.contains(id)).toList();
 
           selected = List<bool>.generate(dataList.length, (index) => false);
+          btnTransmission =
+              List<bool>.generate(dataList.length, (index) => false);
           btnSaisiCaisse =
               List<bool>.generate(dataList.length, (index) => false);
           btnCommandePret =
               List<bool>.generate(dataList.length, (index) => false);
           btnCommandeEnvoyer =
               List<bool>.generate(dataList.length, (index) => false);
-          btnTransmission =
-              List<bool>.generate(dataList.length, (index) => false);
 
           // on récupere les boutons qui est sois déjà validé ou pas dans archives
           // avec la boucle foreach
           dataList.asMap().forEach((index, value) {
+            print('id dalatlist : ${value['id']}');
+            print('id MAtchlist : $matchIDs');
+
             if (matchIDs.contains(value['id'])) {
               archivesOrders.asMap().forEach((key, value) {
                 if (value.transmissionResponsable == 1) {
@@ -114,7 +110,6 @@ class _HomePageState extends State<HomePage> {
               btnCommandeEnvoyer[index] = true;
             }
           });
-          print('Voici les nom archives :$loginNameArchive');
         });
       }
     } catch (e) {
@@ -135,10 +130,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   //shownotificationwindow
+  //bloc notification
   Future<void> notificationWindows(String title, String body) async {
     final notification = WindowsNotification(applicationId: "www.terranimo.re");
     NotificationMessage message = NotificationMessage.fromPluginTemplate(
-      "test1",
+      "Terranimo",
       title,
       body,
     );
@@ -152,6 +148,13 @@ class _HomePageState extends State<HomePage> {
           await http.get(Uri.parse('http://192.168.1.28:1111/commandes'));
       if (response.statusCode == 200) {
         siCommandeExiste = json.decode(response.body);
+        print('id pour siCommandeExiste : ${siCommandeExiste[0]['id']}');
+        print('id pour datalist : ${dataList[0]['id']}');
+
+        if (siCommandeExiste[0]['id'] > dataList[0]['id']) {
+          // Nouvelle commande détectée
+          notificationWindows('Nouvelle', 'Une nouvelle commandes passé');
+        }
       }
     } catch (e) {
       print('erreur lors du timerhttp : $e');
@@ -160,11 +163,11 @@ class _HomePageState extends State<HomePage> {
 
   //timer
   void verificationNouveauCommande() {
-    const duration = Duration(minutes: 5); // intervalle de seconde
-    const tempsRefresh = Duration(minutes: 1);
+    const duration = Duration(minutes: 10); // intervalle de seconde
     Timer.periodic(duration, (timer) => fetchNewDataOrders());
-    // Timer.periodic(tempsRefresh, (timer) => fetchDataOrders());
   }
+  /////
+  ///FIN BLOC NOTIF
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +241,20 @@ class _HomePageState extends State<HomePage> {
                                     : dataList.isEmpty
                                         // on affiche un indicateur de charge si list eszt vide
                                         ? const Center(
-                                            child: CircularProgressIndicator())
+                                            child: Column(
+                                            children: [
+                                              CircularProgressIndicator(),
+                                              // SizedBox(
+                                              //   height: 20,
+                                              // ),
+                                              // ElevatedButton(
+                                              //     onPressed: () {
+                                              //       fetchDataOrders();
+                                              //     },
+                                              //     child: const Text(
+                                              //         'Charger les commandes'))
+                                            ],
+                                          ))
                                         //sinon
 
                                         : ListAllOrders(
