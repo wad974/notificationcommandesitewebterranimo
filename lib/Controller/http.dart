@@ -6,6 +6,9 @@ class RequeteHttp {
   List message = [];
   String baseUrl = '';
 
+  // function recup commande depuis api python
+  
+
   //function post lien api
   Future<void> postUrlApi(String url) async {
     print('y as quoi dedans : $url');

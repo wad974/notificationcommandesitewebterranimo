@@ -12,7 +12,7 @@ class ArchivesOrdersList extends StatefulWidget {
 
 class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
   //delete actif
-  final bool delete = false;
+  final bool delete = true;
   //db
   DataBase db = DataBase();
   late Orders orders;

@@ -1,13 +1,18 @@
+// ignore_for_file: avoid_unnecessary_containers, non_constant_identifier_names, avoid_print
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:notification_app_woocommerce/Controller/http.dart';
 import 'package:notification_app_woocommerce/model/config_param.dart';
+import 'package:notification_app_woocommerce/view/account/sousdossier/form_api_woocommerce.dart';
 
 import '../../Controller/params.dart';
 import '../../widget/drawer/drawerpage.dart';
 import '../footer.dart';
 import '../header.dart';
+import 'sousdossier/form_api_python.dart';
 
 class AccountPage extends StatefulWidget {
   static String routeName = 'account';
@@ -20,28 +25,32 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   //GlobalKey pour formulaire parametre
   final _formKey = GlobalKey<FormState>();
+  final _formApiKey = GlobalKey<FormState>();
   //textediting
   final TextEditingController input = TextEditingController();
+  final TextEditingController inputApiPython = TextEditingController();
   //init sql
-  final ParamsDatabase _db = ParamsDatabase();
+  final ParamsDatabase _dbParams = ParamsDatabase();
   //List Params
   List configList = [];
+  String urlApiPython = '';
+  String urlApiWooCommerce = '';
   //init requetteHTTP
   final RequeteHttp req = RequeteHttp();
 
   @override
   void initState() {
-    //init sql
-    _db.openSqlParams().then((context) => afficheParams());
-
     super.initState();
+    //init sql
+    _dbParams.openSqlParams().then((context) => afficheParams());
   }
 
   //dispose pour netoyer le input
   @override
   void dispose() {
-    input.dispose();
     super.dispose();
+    inputApiPython.dispose();
+    input.dispose();
   }
 
   //valideForm
@@ -63,20 +72,48 @@ class _AccountPageState extends State<AccountPage> {
     }
   }
 
-  // insertdataapi
+  // insertdataapiWoocommerce
   Future<void> insertDataApi(String url) async {
     int id = 0;
     var url_api = Params(id: id, url: url);
-    await _db.insertParams(url_api);
+    await _dbParams.insertParams(url_api);
     await req.postUrlApi(url.toString());
+  }
+
+  //valideFormApiPython
+  void valideFormApiPython() {
+    if (_formApiKey.currentState!.validate()) {
+      setState(() {
+        insertDataApiPython(inputApiPython.text);
+        const duration = Duration(seconds: 1);
+        Timer.periodic(duration, (timer) {
+          afficheParams();
+          timer.cancel();
+        });
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Center(child: Text(inputApiPython.text)),
+        ),
+      );
+    }
+  }
+
+  // insertdataapiPython
+  Future<void> insertDataApiPython(String url) async {
+    int id = 1;
+    var url_api = Params(id: id, url: url);
+    await _dbParams.insertParams(url_api);
   }
 
   // affiche les params
   Future<void> afficheParams() async {
-    List<Params> listParams = await _db.listesParamsArchivers();
+    List<Params> listParams = await _dbParams.listesParamsArchivers();
     setState(() {
       configList = listParams;
-      print(configList);
+      urlApiWooCommerce = configList[0].url;
+      urlApiPython = configList[1].url;
+      print('ici $configList');
     });
   }
 
@@ -123,92 +160,30 @@ class _AccountPageState extends State<AccountPage> {
                           child: Container(
                             padding: const EdgeInsets.all(10),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // champ Form pour parametres
-                                Form(
-                                    key: _formKey,
-                                    child: Column(
-                                      children: [
-                                        // div url api
-                                        Container(
-                                          height: 75,
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              // champ api
-                                              Container(
-                                                width: 700,
-                                                child: TextFormField(
-                                                  style:
-                                                      TextStyle(fontSize: 17),
-                                                  controller: input,
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    labelText:
-                                                        'API WOOCOMMERCE',
-                                                    icon: Icon(Icons.link),
-                                                  ),
-                                                  validator: (value) {
-                                                    if (value == null ||
-                                                        value.isEmpty) {
-                                                      return "Merci de remplir l'adresse de l'API";
-                                                    }
-                                                    return null;
-                                                  },
-                                                ),
-                                              ),
-
-                                              // champ bouton
-                                              Container(
-                                                padding: const EdgeInsets.only(
-                                                    left: 10),
-                                                width: 200,
-                                                child: ElevatedButton(
-                                                    style: ButtonStyle(
-                                                        minimumSize:
-                                                            MaterialStateProperty.all(
-                                                                Size(200, 60)),
-                                                        foregroundColor:
-                                                            MaterialStateProperty.all(
-                                                                Colors.white),
-                                                        backgroundColor:
-                                                            MaterialStateProperty.all(
-                                                                const Color.fromRGBO(
-                                                                    192, 69, 61, 1)),
-                                                        shape: MaterialStateProperty.all(
-                                                            RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius.circular(5)))),
-                                                    onPressed: () {
-                                                      valideForm();
-                                                    },
-                                                    child: const Text('Enregistre')),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        //on affiche les parametre déjà enregistrer
-                                        Container(
-                                          height: 200,
-                                          child: ListView.builder(
-                                              itemCount: configList.length,
-                                              itemBuilder: (context, index) {
-                                                print(configList[index].url);
-                                                return Text(
-                                                    'URL API WOOCOMMERCE : ${configList[index].url}');
-                                              }),
-                                        ),
-
-                                      ],
-                                    ))
+                                //api woocommerce
+                                Container(
+                                  child: FormApiWooCommerce(
+                                    urlApiWooCommerce: urlApiWooCommerce,
+                                    formKey: _formKey,
+                                    input: input,
+                                    valideForm: valideForm,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 40,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    child: FormApiPython(
+                                      urlApiPython: urlApiPython,
+                                      formApiKey: _formApiKey,
+                                      input: inputApiPython,
+                                      valideFormApiPython: valideFormApiPython,
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
                           ),

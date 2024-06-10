@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:notification_app_woocommerce/model/config_param.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
 
@@ -17,6 +18,7 @@ import 'package:notification_app_woocommerce/view/homepage/orders/liste_de_tout_
 import 'package:notification_app_woocommerce/widget/drawer/drawerpage.dart';
 
 import '../../Controller/database.dart';
+import '../../Controller/params.dart';
 import '../../model/orders.dart';
 
 class HomePage extends StatefulWidget {
@@ -46,22 +48,43 @@ class _HomePageState extends State<HomePage> {
   late String loginName;
   //database sqlite
   DataBase db = DataBase();
+  ParamsDatabase dbParams = ParamsDatabase();
+  // liste archives
   List archivesOrders = [];
+  List configParams = [];
+  //url
+  late String urlApiPython = '';
 
   @override
   void initState() {
     super.initState();
-    fetchDataOrders();
-    db.openSql().then((context) => fetchArchivesOrders());
+    initialisation();
+  }
 
+  //initialisaton dans l'ordre apour chaque function
+  Future<void> initialisation() async {
+    await dbParams.openSqlParams().then((context) => fetchParams());
+    //liste pour comparer archives & orders , recup params
+    await db.openSql().then((context) => fetchArchivesOrders());
+    //archives commande
+    await fetchDataOrders();
     //notification
     verificationNouveauCommande();
   }
 
+  //paramsArchives pour se connecter api python
+  Future<void> fetchParams() async {
+    List<Params> params = await dbParams.listesParamsArchivers();
+    setState(() {
+      configParams = params;
+      urlApiPython = configParams[1].url;
+    });
+  }
+
+  // recupere commande depuis api python
   Future<void> fetchDataOrders() async {
     try {
-      http.Response response =
-          await http.get(Uri.parse('http://192.168.1.28:1111/commandes'));
+      http.Response response = await http.get(Uri.parse(urlApiPython));
 
       if (response.statusCode == 200) {
         // print(json.decode(response.body));
@@ -144,8 +167,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchNewDataOrders() async {
     try {
-      http.Response response =
-          await http.get(Uri.parse('http://192.168.1.28:1111/commandes'));
+      http.Response response = await http.get(Uri.parse(configParams[1].url));
       if (response.statusCode == 200) {
         siCommandeExiste = json.decode(response.body);
         print('id pour siCommandeExiste : ${siCommandeExiste[0]['id']}');
