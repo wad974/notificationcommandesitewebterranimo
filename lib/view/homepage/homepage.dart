@@ -75,16 +75,16 @@ class _HomePageState extends State<HomePage> {
   //paramsArchives pour se connecter api python
   Future<void> fetchParams() async {
     List<Params> params = await dbParams.listesParamsArchivers();
-    setState(() {
-      configParams = params;
-      urlApiPython = configParams[1].url;
-    });
+
+    configParams = params;
+    urlApiPython = configParams[1].url;
   }
 
   // recupere commande depuis api python
   Future<void> fetchDataOrders() async {
     try {
-      http.Response response = await http.get(Uri.parse(urlApiPython));
+      http.Response response =
+          await http.get(Uri.parse('$urlApiPython/commandes'));
 
       if (response.statusCode == 200) {
         // print(json.decode(response.body));
@@ -167,7 +167,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchNewDataOrders() async {
     try {
-      http.Response response = await http.get(Uri.parse(configParams[1].url));
+      http.Response response =
+          await http.get(Uri.parse('$urlApiPython/commandes'));
       if (response.statusCode == 200) {
         siCommandeExiste = json.decode(response.body);
         print('id pour siCommandeExiste : ${siCommandeExiste[0]['id']}');
@@ -288,6 +289,7 @@ class _HomePageState extends State<HomePage> {
                                             btnSaisiCaisse: btnSaisiCaisse,
                                             btnTransmission: btnTransmission,
                                             loginName: loginName,
+                                            urlApiPython: urlApiPython,
                                           )
                               ],
                             ),

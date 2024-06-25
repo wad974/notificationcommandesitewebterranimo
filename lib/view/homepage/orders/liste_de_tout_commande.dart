@@ -14,6 +14,7 @@ class ListAllOrders extends StatefulWidget {
   late List<bool> btnCommandePret;
   late List<bool> btnCommandeEnvoyer;
   String loginName;
+  String urlApiPython;
 
   ListAllOrders({
     super.key,
@@ -24,6 +25,7 @@ class ListAllOrders extends StatefulWidget {
     required this.btnTransmission,
     required this.loginName,
     required this.matchIDs,
+    required this.urlApiPython,
   });
 
   @override
@@ -97,7 +99,8 @@ class _ListAllOrdersState extends State<ListAllOrders> {
       // print('contenu id apres bouton :$statusProcessing');
 
       try {
-        await req.updateStatusCommandePret(statusProcessing, id);
+        await req.updateStatusCommandePret(
+            widget.urlApiPython, statusProcessing, id);
         setState(() {
           widget.btnCommandePret[index] = !widget.btnCommandePret[index];
           widget.btnCommandePret[index] = true;
@@ -173,7 +176,8 @@ class _ListAllOrdersState extends State<ListAllOrders> {
         // et on insere l'archives
         await db.insertOrders(archivesCommandes);
         // reqAPI
-        await req.updateStatusCommandePret(statusCompleted, id);
+        await req.updateStatusCommandePret(
+            widget.urlApiPython, statusCompleted, id);
         // setstate mise a jour du bouton + stockage du message
         setState(() {
           widget.btnCommandeEnvoyer[index] = !widget.btnCommandeEnvoyer[index];
@@ -355,7 +359,8 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                               )),
                               //livraion
                               DataCell(Center(
-                                  child: Text(widget.dataList[index]['nom']))),
+                                  child: Text(
+                                      widget.dataList[index]['shipping']))),
                               //transmission
                               DataCell(Center(
                                 child: widget.btnCommandeEnvoyer[index] ==
@@ -471,16 +476,18 @@ class _ListAllOrdersState extends State<ListAllOrders> {
                               ),
                               //Nom responsable
                               DataCell(Center(
-                                  child:
-                                      widget.btnCommandeEnvoyer[index] == false
-                                          ? Text(
-                                              widget.loginName,
-                                              textAlign: TextAlign.center,
-                                            )
-                                          : const Text(
-                                              'Voir archives',
-                                              textAlign: TextAlign.center,
-                                            ))),
+                                  child: widget.btnCommandeEnvoyer[index] ==
+                                              false &&
+                                          widget.dataList[index]['status'] !=
+                                              'completed'
+                                      ? Text(
+                                          widget.loginName,
+                                          textAlign: TextAlign.center,
+                                        )
+                                      : const Text(
+                                          'Voir archives',
+                                          textAlign: TextAlign.center,
+                                        ))),
                             ],
                           );
                         },

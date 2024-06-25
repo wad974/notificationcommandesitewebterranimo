@@ -56,13 +56,12 @@ class FormApiWooCommerce extends StatelessWidget {
                     width: 200,
                     child: ElevatedButton(
                         style: ButtonStyle(
-                            minimumSize:
-                                MaterialStateProperty.all(Size(200, 60)),
+                            minimumSize: WidgetStateProperty.all(Size(200, 60)),
                             foregroundColor:
-                                MaterialStateProperty.all(Colors.white),
-                            backgroundColor: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Colors.white),
+                            backgroundColor: WidgetStateProperty.all(
                                 const Color.fromRGBO(192, 69, 61, 1)),
-                            shape: MaterialStateProperty.all(
+                            shape: WidgetStateProperty.all(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(5)))),
                         onPressed: () {

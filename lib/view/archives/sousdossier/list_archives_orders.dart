@@ -280,13 +280,13 @@ class _ArchivesOrdersListState extends State<ArchivesOrdersList> {
                                   child: Text(archivesOrders[index]
                                       .nomDuResponsableEnCharge))),
                             ],
-                            // selected: selected[index],
-                            // onSelectChanged: (value) {
-                            //   int id = archivesOrders[index].id;
-                            //   if (delete == true) {
-                            //     deleteArchivesOrder(value, id, index);
-                            //   }
-                            // },
+                            selected: selected[index],
+                            onSelectChanged: (value) {
+                              int id = archivesOrders[index].id;
+                              if (delete == true) {
+                                deleteArchivesOrder(value, id, index);
+                              }
+                            },
                           );
                         },
                       ),

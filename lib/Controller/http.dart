@@ -4,17 +4,20 @@ import 'package:http/http.dart' as http;
 
 class RequeteHttp {
   List message = [];
-  String baseUrl = '';
+  late String baseUrl = '';
 
   // function recup commande depuis api python
-  
+  void updateBaseUrl(url) {
+    baseUrl = url;
+  }
 
   //function post lien api
-  Future<void> postUrlApi(String url) async {
+  Future<void> postUrlApi(String baseUrl, String url) async {
     print('y as quoi dedans : $url');
+    baseUrl = baseUrl;
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.28:1111/urlApi'),
+      Uri.parse('$baseUrl/urlApi'),
       headers: {'Content-type': 'application/json'},
       body: jsonEncode(
         {
@@ -31,9 +34,11 @@ class RequeteHttp {
   }
 
   //function future update commandePrete
-  Future<void> updateStatusCommandePret(String status, int id) async {
+  Future<void> updateStatusCommandePret(
+      String baseUrl, String status, int id) async {
+    baseUrl = baseUrl;
     final response = await http.put(
-      Uri.parse('http://192.168.1.28:1111/updateStatus'),
+      Uri.parse('$baseUrl/updateStatus'),
       headers: <String, String>{
         'Content-type': 'application/json; charset=UTF-8'
       },

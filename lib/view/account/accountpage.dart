@@ -77,7 +77,7 @@ class _AccountPageState extends State<AccountPage> {
     int id = 0;
     var url_api = Params(id: id, url: url);
     await _dbParams.insertParams(url_api);
-    await req.postUrlApi(url.toString());
+    await req.postUrlApi(urlApiPython, url.toString());
   }
 
   //valideFormApiPython
